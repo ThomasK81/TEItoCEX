@@ -5,7 +5,19 @@ Turn CTS TEI corpora like CHS and OGL's [First1KGreek](http://opengreekandlatin.
 
 1. Copy `CTSExtract` into the unpacked data folder of e.g. First1Greek. 
 2. Open a terminal in that folder and type: `./CTSExtract 1kGreek.cex ` (you might have to chmod +x the executable before you can use it)
-3. Enjoy your new CEX collection file.
+3. Enjoy your new CEX collection file!
+
+Sample output:
+
+```
+.................................................................
+Read 860 of 860 files.
+Write nodes to file now:
+Wrote 186909 nodes.
+21160286 words written in the Greek alphabet.
+3755493 words written in the Latin alphabet.
+5990 words written in the Arabic alphabet.
+```
 
 # Linux and Windows
 
