@@ -246,7 +246,6 @@ func main() {
 	greekWordRegExp := regexp.MustCompile(`\p{Greek}+`)
 	latinWordRegExp := regexp.MustCompile(`\p{Latin}+`)
 	arabicWordRegExp := regexp.MustCompile(`\p{Arabic}+`)
-	reInsideWhtsp := regexp.MustCompile(`[\s\p{Zs}]{2,}`)
 
 	var querystrings []string
 	var identifiers []string
@@ -328,10 +327,8 @@ func main() {
 								identifier := strings.Join(id, ".")
 								identifier = strings.Join([]string{baseIdentifier, identifier}, ":")
 								text := data.Node[i].Node[j].Node[k].Node[l].InnerXML
-								text = strings.Replace(text, "\n", " ", -1)
-								text = tagsRegExp.ReplaceAllString(text, "")
-								text = strings.TrimSpace(text)
-								text = reInsideWhtsp.ReplaceAllString(text, " ")
+								text = stringcleaning(text)
+
 								words := greekWordRegExp.FindAllString(text, -1)
 								latinword := latinWordRegExp.FindAllString(text, -1)
 								arabicword := arabicWordRegExp.FindAllString(text, -1)
@@ -372,10 +369,8 @@ func main() {
 								decoder.DecodeElement(&info, &se)
 								identifier := strings.Join([]string{baseIdentifier, info.Number}, ":")
 								text := info.InnerXML
-								text = strings.Replace(text, "\n", " ", -1)
-								text = tagsRegExp.ReplaceAllString(text, "")
-								text = strings.TrimSpace(text)
-								text = reInsideWhtsp.ReplaceAllString(text, " ")
+								text = stringcleaning(text)
+
 								words := greekWordRegExp.FindAllString(text, -1)
 								latinword := latinWordRegExp.FindAllString(text, -1)
 								arabicword := arabicWordRegExp.FindAllString(text, -1)
@@ -416,10 +411,8 @@ func main() {
 								decoder.DecodeElement(&info, &se)
 								identifier := strings.Join([]string{baseIdentifier, info.Number}, ":")
 								text := info.InnerXML
-								text = strings.Replace(text, "\n", " ", -1)
-								text = tagsRegExp.ReplaceAllString(text, "")
-								text = strings.TrimSpace(text)
-								text = reInsideWhtsp.ReplaceAllString(text, " ")
+								text = stringcleaning(text)
+
 								words := greekWordRegExp.FindAllString(text, -1)
 								latinword := latinWordRegExp.FindAllString(text, -1)
 								arabicword := arabicWordRegExp.FindAllString(text, -1)
@@ -460,10 +453,8 @@ func main() {
 								decoder.DecodeElement(&info, &se)
 								identifier := strings.Join([]string{baseIdentifier, info.Number}, ":")
 								text := info.InnerXML
-								text = strings.Replace(text, "\n", " ", -1)
-								text = tagsRegExp.ReplaceAllString(text, "")
-								text = strings.TrimSpace(text)
-								text = reInsideWhtsp.ReplaceAllString(text, " ")
+								text = stringcleaning(text)
+
 								words := greekWordRegExp.FindAllString(text, -1)
 								latinword := latinWordRegExp.FindAllString(text, -1)
 								arabicword := arabicWordRegExp.FindAllString(text, -1)
@@ -504,10 +495,8 @@ func main() {
 								decoder.DecodeElement(&info, &se)
 								identifier := strings.Join([]string{baseIdentifier, info.Number}, ":")
 								text := info.InnerXML
-								text = strings.Replace(text, "\n", " ", -1)
-								text = tagsRegExp.ReplaceAllString(text, "")
-								text = strings.TrimSpace(text)
-								text = reInsideWhtsp.ReplaceAllString(text, " ")
+								text = stringcleaning(text)
+
 								words := greekWordRegExp.FindAllString(text, -1)
 								latinword := latinWordRegExp.FindAllString(text, -1)
 								arabicword := arabicWordRegExp.FindAllString(text, -1)
@@ -548,10 +537,8 @@ func main() {
 								decoder.DecodeElement(&info, &se)
 								identifier := strings.Join([]string{baseIdentifier, info.Number}, ":")
 								text := info.InnerXML
-								text = strings.Replace(text, "\n", " ", -1)
-								text = tagsRegExp.ReplaceAllString(text, "")
-								text = strings.TrimSpace(text)
-								text = reInsideWhtsp.ReplaceAllString(text, " ")
+								text = stringcleaning(text)
+
 								words := greekWordRegExp.FindAllString(text, -1)
 								latinword := latinWordRegExp.FindAllString(text, -1)
 								arabicword := arabicWordRegExp.FindAllString(text, -1)
@@ -595,10 +582,8 @@ func main() {
 								identifier := strings.Join(id, ".")
 								identifier = strings.Join([]string{baseIdentifier, identifier}, ":")
 								text := info.InnerXML
-								text = strings.Replace(text, "\n", " ", -1)
-								text = tagsRegExp.ReplaceAllString(text, "")
-								text = strings.TrimSpace(text)
-								text = reInsideWhtsp.ReplaceAllString(text, " ")
+								text = stringcleaning(text)
+
 								words := greekWordRegExp.FindAllString(text, -1)
 								latinword := latinWordRegExp.FindAllString(text, -1)
 								arabicword := arabicWordRegExp.FindAllString(text, -1)
@@ -644,10 +629,8 @@ func main() {
 									identifier := strings.Join(id, ".")
 									identifier = strings.Join([]string{baseIdentifier, identifier}, ":")
 									text := info.InnerXML
-									text = strings.Replace(text, "\n", " ", -1)
-									text = tagsRegExp.ReplaceAllString(text, "")
-									text = strings.TrimSpace(text)
-									text = reInsideWhtsp.ReplaceAllString(text, " ")
+									text = stringcleaning(text)
+
 									words := greekWordRegExp.FindAllString(text, -1)
 									latinword := latinWordRegExp.FindAllString(text, -1)
 									arabicword := arabicWordRegExp.FindAllString(text, -1)
@@ -692,10 +675,8 @@ func main() {
 								identifier := strings.Join(id, ".")
 								identifier = strings.Join([]string{baseIdentifier, identifier}, ":")
 								text := info.InnerXML
-								text = strings.Replace(text, "\n", " ", -1)
-								text = tagsRegExp.ReplaceAllString(text, "")
-								text = strings.TrimSpace(text)
-								text = reInsideWhtsp.ReplaceAllString(text, " ")
+								text = stringcleaning(text)
+
 								words := greekWordRegExp.FindAllString(text, -1)
 								latinword := latinWordRegExp.FindAllString(text, -1)
 								arabicword := arabicWordRegExp.FindAllString(text, -1)
@@ -728,10 +709,8 @@ func main() {
 							identifier := strings.Join(id, ".")
 							identifier = strings.Join([]string{baseIdentifier, identifier}, ":")
 							text := data.Node[i].Node[j].Node[k].InnerXML
-							text = strings.Replace(text, "\n", " ", -1)
-							text = tagsRegExp.ReplaceAllString(text, "")
-							text = strings.TrimSpace(text)
-							text = reInsideWhtsp.ReplaceAllString(text, " ")
+							text = stringcleaning(text)
+
 							words := greekWordRegExp.FindAllString(text, -1)
 							latinword := latinWordRegExp.FindAllString(text, -1)
 							arabicword := arabicWordRegExp.FindAllString(text, -1)
@@ -763,10 +742,8 @@ func main() {
 							identifier := strings.Join(id, ".")
 							identifier = strings.Join([]string{baseIdentifier, identifier}, ":")
 							text := data.Node[i].Node[j].Node[k].InnerXML
-							text = strings.Replace(text, "\n", " ", -1)
-							text = tagsRegExp.ReplaceAllString(text, "")
-							text = strings.TrimSpace(text)
-							text = reInsideWhtsp.ReplaceAllString(text, " ")
+							text = stringcleaning(text)
+
 							words := greekWordRegExp.FindAllString(text, -1)
 							latinword := latinWordRegExp.FindAllString(text, -1)
 							arabicword := arabicWordRegExp.FindAllString(text, -1)
@@ -794,10 +771,8 @@ func main() {
 					identifier = strings.Replace(identifier, ".xml", "", -1)
 					identifier = strings.Join([]string{identifier, node.Number}, ":")
 					text := node.InnerXML
-					text = strings.Replace(text, "\n", " ", -1)
-					text = tagsRegExp.ReplaceAllString(text, "")
-					text = strings.TrimSpace(text)
-					text = reInsideWhtsp.ReplaceAllString(text, " ")
+					text = stringcleaning(text)
+
 					words := greekWordRegExp.FindAllString(text, -1)
 					latinword := latinWordRegExp.FindAllString(text, -1)
 					arabicword := arabicWordRegExp.FindAllString(text, -1)
@@ -823,10 +798,8 @@ func main() {
 					identifier = strings.Replace(identifier, ".xml", "", -1)
 					identifier = strings.Join([]string{identifier, node.Number}, ":")
 					text := node.InnerXML
-					text = strings.Replace(text, "\n", " ", -1)
-					text = tagsRegExp.ReplaceAllString(text, "")
-					text = strings.TrimSpace(text)
-					text = reInsideWhtsp.ReplaceAllString(text, " ")
+					text = stringcleaning(text)
+
 					words := greekWordRegExp.FindAllString(text, -1)
 					latinword := latinWordRegExp.FindAllString(text, -1)
 					arabicword := arabicWordRegExp.FindAllString(text, -1)
@@ -852,10 +825,8 @@ func main() {
 					identifier = strings.Replace(identifier, ".xml", "", -1)
 					identifier = strings.Join([]string{identifier, node.Number}, ":")
 					text := node.InnerXML
-					text = strings.Replace(text, "\n", " ", -1)
-					text = tagsRegExp.ReplaceAllString(text, "")
-					text = strings.TrimSpace(text)
-					text = reInsideWhtsp.ReplaceAllString(text, " ")
+					text = stringcleaning(text)
+
 					words := greekWordRegExp.FindAllString(text, -1)
 					latinword := latinWordRegExp.FindAllString(text, -1)
 					arabicword := arabicWordRegExp.FindAllString(text, -1)
@@ -881,10 +852,8 @@ func main() {
 					identifier = strings.Replace(identifier, ".xml", "", -1)
 					identifier = strings.Join([]string{identifier, node.Number}, ":")
 					text := node.InnerXML
-					text = strings.Replace(text, "\n", " ", -1)
-					text = tagsRegExp.ReplaceAllString(text, "")
-					text = strings.TrimSpace(text)
-					text = reInsideWhtsp.ReplaceAllString(text, " ")
+					text = stringcleaning(text)
+
 					words := greekWordRegExp.FindAllString(text, -1)
 					latinword := latinWordRegExp.FindAllString(text, -1)
 					arabicword := arabicWordRegExp.FindAllString(text, -1)
@@ -910,10 +879,8 @@ func main() {
 					identifier = strings.Replace(identifier, ".xml", "", -1)
 					identifier = strings.Join([]string{identifier, node.Number}, ":")
 					text := node.InnerXML
-					text = strings.Replace(text, "\n", " ", -1)
-					text = tagsRegExp.ReplaceAllString(text, "")
-					text = strings.TrimSpace(text)
-					text = reInsideWhtsp.ReplaceAllString(text, " ")
+					text = stringcleaning(text)
+
 					words := greekWordRegExp.FindAllString(text, -1)
 					latinword := latinWordRegExp.FindAllString(text, -1)
 					arabicword := arabicWordRegExp.FindAllString(text, -1)
@@ -942,10 +909,8 @@ func main() {
 						identifier := strings.Join(id, ".")
 						identifier = strings.Join([]string{baseIdentifier, identifier}, ":")
 						text := data.Node[i].Node[j].InnerXML
-						text = strings.Replace(text, "\n", " ", -1)
-						text = tagsRegExp.ReplaceAllString(text, "")
-						text = strings.TrimSpace(text)
-						text = reInsideWhtsp.ReplaceAllString(text, " ")
+						text = stringcleaning(text)
+
 						words := greekWordRegExp.FindAllString(text, -1)
 						latinword := latinWordRegExp.FindAllString(text, -1)
 						arabicword := arabicWordRegExp.FindAllString(text, -1)
@@ -975,10 +940,8 @@ func main() {
 						identifier := strings.Join(id, ".")
 						identifier = strings.Join([]string{baseIdentifier, identifier}, ":")
 						text := data.Node[i].Node[j].InnerXML
-						text = strings.Replace(text, "\n", " ", -1)
-						text = tagsRegExp.ReplaceAllString(text, "")
-						text = strings.TrimSpace(text)
-						text = reInsideWhtsp.ReplaceAllString(text, " ")
+						text = stringcleaning(text)
+
 						words := greekWordRegExp.FindAllString(text, -1)
 						latinword := latinWordRegExp.FindAllString(text, -1)
 						arabicword := arabicWordRegExp.FindAllString(text, -1)
@@ -1008,10 +971,8 @@ func main() {
 						identifier := strings.Join(id, ".")
 						identifier = strings.Join([]string{baseIdentifier, identifier}, ":")
 						text := data.Node[i].Node[j].InnerXML
-						text = strings.Replace(text, "\n", " ", -1)
-						text = tagsRegExp.ReplaceAllString(text, "")
-						text = strings.TrimSpace(text)
-						text = reInsideWhtsp.ReplaceAllString(text, " ")
+						text = stringcleaning(text)
+
 						words := greekWordRegExp.FindAllString(text, -1)
 						latinword := latinWordRegExp.FindAllString(text, -1)
 						arabicword := arabicWordRegExp.FindAllString(text, -1)
@@ -1041,10 +1002,8 @@ func main() {
 						identifier := strings.Join(id, ".")
 						identifier = strings.Join([]string{baseIdentifier, identifier}, ":")
 						text := data.Node[i].Node[j].InnerXML
-						text = strings.Replace(text, "\n", " ", -1)
-						text = tagsRegExp.ReplaceAllString(text, "")
-						text = strings.TrimSpace(text)
-						text = reInsideWhtsp.ReplaceAllString(text, " ")
+						text = stringcleaning(text)
+
 						words := greekWordRegExp.FindAllString(text, -1)
 						latinword := latinWordRegExp.FindAllString(text, -1)
 						arabicword := arabicWordRegExp.FindAllString(text, -1)
@@ -1075,10 +1034,8 @@ func main() {
 							identifier := strings.Join(id, ".")
 							identifier = strings.Join([]string{baseIdentifier, identifier}, ":")
 							text := data.Node[i].Node[j].Node[k].InnerXML
-							text = strings.Replace(text, "\n", " ", -1)
-							text = tagsRegExp.ReplaceAllString(text, "")
-							text = strings.TrimSpace(text)
-							text = reInsideWhtsp.ReplaceAllString(text, " ")
+							text = stringcleaning(text)
+
 							words := greekWordRegExp.FindAllString(text, -1)
 							latinword := latinWordRegExp.FindAllString(text, -1)
 							arabicword := arabicWordRegExp.FindAllString(text, -1)
@@ -1106,10 +1063,8 @@ func main() {
 					identifier = strings.Replace(identifier, ".xml", "", -1)
 					identifier = strings.Join([]string{identifier, node.Number}, ":")
 					text := node.InnerXML
-					text = strings.Replace(text, "\n", " ", -1)
-					text = tagsRegExp.ReplaceAllString(text, "")
-					text = strings.TrimSpace(text)
-					text = reInsideWhtsp.ReplaceAllString(text, " ")
+					text = stringcleaning(text)
+
 					words := greekWordRegExp.FindAllString(text, -1)
 					latinword := latinWordRegExp.FindAllString(text, -1)
 					arabicword := arabicWordRegExp.FindAllString(text, -1)
@@ -1138,10 +1093,8 @@ func main() {
 						identifier := strings.Join(id, ".")
 						identifier = strings.Join([]string{baseIdentifier, identifier}, ":")
 						text := data.Node[i].Node[j].InnerXML
-						text = strings.Replace(text, "\n", " ", -1)
-						text = tagsRegExp.ReplaceAllString(text, "")
-						text = strings.TrimSpace(text)
-						text = reInsideWhtsp.ReplaceAllString(text, " ")
+						text = stringcleaning(text)
+
 						words := greekWordRegExp.FindAllString(text, -1)
 						latinword := latinWordRegExp.FindAllString(text, -1)
 						arabicword := arabicWordRegExp.FindAllString(text, -1)
@@ -1172,10 +1125,8 @@ func main() {
 							identifier := strings.Join(id, ".")
 							identifier = strings.Join([]string{baseIdentifier, identifier}, ":")
 							text := data.Node[i].Node[j].Node[k].InnerXML
-							text = strings.Replace(text, "\n", " ", -1)
-							text = tagsRegExp.ReplaceAllString(text, "")
-							text = strings.TrimSpace(text)
-							text = reInsideWhtsp.ReplaceAllString(text, " ")
+							text = stringcleaning(text)
+
 							words := greekWordRegExp.FindAllString(text, -1)
 							latinword := latinWordRegExp.FindAllString(text, -1)
 							arabicword := arabicWordRegExp.FindAllString(text, -1)
@@ -1207,10 +1158,8 @@ func main() {
 							identifier := strings.Join(id, ".")
 							identifier = strings.Join([]string{baseIdentifier, identifier}, ":")
 							text := data.Node[i].Node[j].Node[k].InnerXML
-							text = strings.Replace(text, "\n", " ", -1)
-							text = tagsRegExp.ReplaceAllString(text, "")
-							text = strings.TrimSpace(text)
-							text = reInsideWhtsp.ReplaceAllString(text, " ")
+							text = stringcleaning(text)
+
 							words := greekWordRegExp.FindAllString(text, -1)
 							latinword := latinWordRegExp.FindAllString(text, -1)
 							arabicword := arabicWordRegExp.FindAllString(text, -1)
@@ -1241,10 +1190,7 @@ func main() {
 						identifier := strings.Join(id, ".")
 						identifier = strings.Join([]string{baseIdentifier, identifier}, ":")
 						text := data.Node[i].Node[j].InnerXML
-						text = strings.Replace(text, "\n", " ", -1)
-						text = tagsRegExp.ReplaceAllString(text, "")
-						text = strings.TrimSpace(text)
-						text = reInsideWhtsp.ReplaceAllString(text, " ")
+						text = stringcleaning(text)
 						words := greekWordRegExp.FindAllString(text, -1)
 						latinword := latinWordRegExp.FindAllString(text, -1)
 						arabicword := arabicWordRegExp.FindAllString(text, -1)
@@ -1345,6 +1291,18 @@ func removeDuplicatesUnordered(elements []string) []string {
 	for key := range encountered {
 		result = append(result, key)
 	}
+	return result
+}
+
+func stringcleaning(text string) string {
+	tagsRegExp := regexp.MustCompile(`<[/]*[^>]*>`)
+	reInsideWhtsp := regexp.MustCompile(`[\s\p{Zs}]{2,}`)
+	result := text
+	result = strings.Replace(result, "\n", " ", -1)
+	result = strings.Replace(result, "#", "", -1)
+	result = tagsRegExp.ReplaceAllString(result, "")
+	result = strings.TrimSpace(result)
+	result = reInsideWhtsp.ReplaceAllString(result, " ")
 	return result
 }
 
