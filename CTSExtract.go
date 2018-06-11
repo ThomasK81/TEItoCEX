@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"sort"
+	"strconv"
 	"strings"
 )
 
@@ -241,7 +242,24 @@ type QueryInfo struct {
 }
 
 func main() {
-	outputFile := os.Args[1]
+	outputFile := ""
+	switch len(os.Args) {
+	case 1:
+		fmt.Println("Usage: CTSExtract [output-filename] [optionally: -CSV]")
+		os.Exit(3)
+	case 2:
+		outputFile = os.Args[1]
+	case 3:
+		if os.Args[2] != "-CSV" {
+			fmt.Println("Usage: CTSExtract [output-filename] [optionally: -CSV]")
+			os.Exit(3)
+		}
+		outputFile = os.Args[1]
+	default:
+		fmt.Println("Usage: CTSExtract [output-filename] [optionally: -CSV]")
+		os.Exit(3)
+	}
+
 	tagsRegExp := regexp.MustCompile(`<[/]*[^>]*>`)
 	greekWordRegExp := regexp.MustCompile(`\p{Greek}+`)
 	latinWordRegExp := regexp.MustCompile(`\p{Latin}+`)
@@ -250,9 +268,9 @@ func main() {
 	var querystrings []string
 	var identifiers []string
 	var texts []string
-	// var greekwordcounts []string
-	// var latinwordcounts []string
-	// var arabicwordcounts []string
+	var greekwordcounts []string
+	var latinwordcounts []string
+	var arabicwordcounts []string
 	var ctscatalog CTSCatalog
 
 	filecount := 0
@@ -333,16 +351,16 @@ func main() {
 								latinword := latinWordRegExp.FindAllString(text, -1)
 								arabicword := arabicWordRegExp.FindAllString(text, -1)
 								greekwords = greekwords + len(words)
-								// 								wordcount := strconv.Itoa(len(words))
+								wordcount := strconv.Itoa(len(words))
 								latinwords = latinwords + len(latinword)
 								arabicwords = arabicwords + len(arabicword)
-								// latinwordcount := strconv.Itoa(len(latinword))
-								// arabicwordcount := strconv.Itoa(len(arabicword))
-								// latinwordcounts = append(latinwordcounts, latinwordcount)
-								// arabicwordcounts = append(arabicwordcounts, arabicwordcount)
+								latinwordcount := strconv.Itoa(len(latinword))
+								arabicwordcount := strconv.Itoa(len(arabicword))
+								latinwordcounts = append(latinwordcounts, latinwordcount)
+								arabicwordcounts = append(arabicwordcounts, arabicwordcount)
 								identifiers = append(identifiers, identifier)
 								texts = append(texts, text)
-								// greekwordcounts = append(greekwordcounts, wordcount)
+								greekwordcounts = append(greekwordcounts, wordcount)
 							}
 						}
 					}
@@ -375,16 +393,16 @@ func main() {
 								latinword := latinWordRegExp.FindAllString(text, -1)
 								arabicword := arabicWordRegExp.FindAllString(text, -1)
 								greekwords = greekwords + len(words)
-								// 								wordcount := strconv.Itoa(len(words))
+								wordcount := strconv.Itoa(len(words))
 								latinwords = latinwords + len(latinword)
 								arabicwords = arabicwords + len(arabicword)
-								// latinwordcount := strconv.Itoa(len(latinword))
-								// arabicwordcount := strconv.Itoa(len(arabicword))
-								// latinwordcounts = append(latinwordcounts, latinwordcount)
-								// arabicwordcounts = append(arabicwordcounts, arabicwordcount)
+								latinwordcount := strconv.Itoa(len(latinword))
+								arabicwordcount := strconv.Itoa(len(arabicword))
+								latinwordcounts = append(latinwordcounts, latinwordcount)
+								arabicwordcounts = append(arabicwordcounts, arabicwordcount)
 								identifiers = append(identifiers, identifier)
 								texts = append(texts, text)
-								// greekwordcounts = append(greekwordcounts, wordcount)
+								greekwordcounts = append(greekwordcounts, wordcount)
 							}
 						}
 					}
@@ -417,16 +435,16 @@ func main() {
 								latinword := latinWordRegExp.FindAllString(text, -1)
 								arabicword := arabicWordRegExp.FindAllString(text, -1)
 								greekwords = greekwords + len(words)
-								// 								wordcount := strconv.Itoa(len(words))
+								wordcount := strconv.Itoa(len(words))
 								latinwords = latinwords + len(latinword)
 								arabicwords = arabicwords + len(arabicword)
-								// latinwordcount := strconv.Itoa(len(latinword))
-								// arabicwordcount := strconv.Itoa(len(arabicword))
-								// latinwordcounts = append(latinwordcounts, latinwordcount)
-								// arabicwordcounts = append(arabicwordcounts, arabicwordcount)
+								latinwordcount := strconv.Itoa(len(latinword))
+								arabicwordcount := strconv.Itoa(len(arabicword))
+								latinwordcounts = append(latinwordcounts, latinwordcount)
+								arabicwordcounts = append(arabicwordcounts, arabicwordcount)
 								identifiers = append(identifiers, identifier)
 								texts = append(texts, text)
-								// greekwordcounts = append(greekwordcounts, wordcount)
+								greekwordcounts = append(greekwordcounts, wordcount)
 							}
 						}
 					}
@@ -459,16 +477,16 @@ func main() {
 								latinword := latinWordRegExp.FindAllString(text, -1)
 								arabicword := arabicWordRegExp.FindAllString(text, -1)
 								greekwords = greekwords + len(words)
-								// 								wordcount := strconv.Itoa(len(words))
+								wordcount := strconv.Itoa(len(words))
 								latinwords = latinwords + len(latinword)
 								arabicwords = arabicwords + len(arabicword)
-								// latinwordcount := strconv.Itoa(len(latinword))
-								// arabicwordcount := strconv.Itoa(len(arabicword))
-								// latinwordcounts = append(latinwordcounts, latinwordcount)
-								// arabicwordcounts = append(arabicwordcounts, arabicwordcount)
+								latinwordcount := strconv.Itoa(len(latinword))
+								arabicwordcount := strconv.Itoa(len(arabicword))
+								latinwordcounts = append(latinwordcounts, latinwordcount)
+								arabicwordcounts = append(arabicwordcounts, arabicwordcount)
 								identifiers = append(identifiers, identifier)
 								texts = append(texts, text)
-								// greekwordcounts = append(greekwordcounts, wordcount)
+								greekwordcounts = append(greekwordcounts, wordcount)
 							}
 						}
 					}
@@ -501,16 +519,16 @@ func main() {
 								latinword := latinWordRegExp.FindAllString(text, -1)
 								arabicword := arabicWordRegExp.FindAllString(text, -1)
 								greekwords = greekwords + len(words)
-								// 								wordcount := strconv.Itoa(len(words))
+								wordcount := strconv.Itoa(len(words))
 								latinwords = latinwords + len(latinword)
 								arabicwords = arabicwords + len(arabicword)
-								// latinwordcount := strconv.Itoa(len(latinword))
-								// arabicwordcount := strconv.Itoa(len(arabicword))
-								// latinwordcounts = append(latinwordcounts, latinwordcount)
-								// arabicwordcounts = append(arabicwordcounts, arabicwordcount)
+								latinwordcount := strconv.Itoa(len(latinword))
+								arabicwordcount := strconv.Itoa(len(arabicword))
+								latinwordcounts = append(latinwordcounts, latinwordcount)
+								arabicwordcounts = append(arabicwordcounts, arabicwordcount)
 								identifiers = append(identifiers, identifier)
 								texts = append(texts, text)
-								// greekwordcounts = append(greekwordcounts, wordcount)
+								greekwordcounts = append(greekwordcounts, wordcount)
 							}
 						}
 					}
@@ -543,16 +561,16 @@ func main() {
 								latinword := latinWordRegExp.FindAllString(text, -1)
 								arabicword := arabicWordRegExp.FindAllString(text, -1)
 								greekwords = greekwords + len(words)
-								// 								wordcount := strconv.Itoa(len(words))
+								wordcount := strconv.Itoa(len(words))
 								latinwords = latinwords + len(latinword)
 								arabicwords = arabicwords + len(arabicword)
-								// latinwordcount := strconv.Itoa(len(latinword))
-								// arabicwordcount := strconv.Itoa(len(arabicword))
-								// latinwordcounts = append(latinwordcounts, latinwordcount)
-								// arabicwordcounts = append(arabicwordcounts, arabicwordcount)
+								latinwordcount := strconv.Itoa(len(latinword))
+								arabicwordcount := strconv.Itoa(len(arabicword))
+								latinwordcounts = append(latinwordcounts, latinwordcount)
+								arabicwordcounts = append(arabicwordcounts, arabicwordcount)
 								identifiers = append(identifiers, identifier)
 								texts = append(texts, text)
-								// greekwordcounts = append(greekwordcounts, wordcount)
+								greekwordcounts = append(greekwordcounts, wordcount)
 							}
 						}
 					}
@@ -588,16 +606,16 @@ func main() {
 								latinword := latinWordRegExp.FindAllString(text, -1)
 								arabicword := arabicWordRegExp.FindAllString(text, -1)
 								greekwords = greekwords + len(words)
-								// 								wordcount := strconv.Itoa(len(words))
+								wordcount := strconv.Itoa(len(words))
 								latinwords = latinwords + len(latinword)
 								arabicwords = arabicwords + len(arabicword)
-								// latinwordcount := strconv.Itoa(len(latinword))
-								// arabicwordcount := strconv.Itoa(len(arabicword))
-								// latinwordcounts = append(latinwordcounts, latinwordcount)
-								// arabicwordcounts = append(arabicwordcounts, arabicwordcount)
+								latinwordcount := strconv.Itoa(len(latinword))
+								arabicwordcount := strconv.Itoa(len(arabicword))
+								latinwordcounts = append(latinwordcounts, latinwordcount)
+								arabicwordcounts = append(arabicwordcounts, arabicwordcount)
 								identifiers = append(identifiers, identifier)
 								texts = append(texts, text)
-								// greekwordcounts = append(greekwordcounts, wordcount)
+								greekwordcounts = append(greekwordcounts, wordcount)
 							}
 						}
 					}
@@ -635,16 +653,16 @@ func main() {
 									latinword := latinWordRegExp.FindAllString(text, -1)
 									arabicword := arabicWordRegExp.FindAllString(text, -1)
 									greekwords = greekwords + len(words)
-									// 								wordcount := strconv.Itoa(len(words))
+									wordcount := strconv.Itoa(len(words))
 									latinwords = latinwords + len(latinword)
 									arabicwords = arabicwords + len(arabicword)
-									// latinwordcount := strconv.Itoa(len(latinword))
-									// arabicwordcount := strconv.Itoa(len(arabicword))
-									// latinwordcounts = append(latinwordcounts, latinwordcount)
-									// arabicwordcounts = append(arabicwordcounts, arabicwordcount)
+									latinwordcount := strconv.Itoa(len(latinword))
+									arabicwordcount := strconv.Itoa(len(arabicword))
+									latinwordcounts = append(latinwordcounts, latinwordcount)
+									arabicwordcounts = append(arabicwordcounts, arabicwordcount)
 									identifiers = append(identifiers, identifier)
 									texts = append(texts, text)
-									// greekwordcounts = append(greekwordcounts, wordcount)
+									greekwordcounts = append(greekwordcounts, wordcount)
 								}
 							}
 						}
@@ -681,16 +699,16 @@ func main() {
 								latinword := latinWordRegExp.FindAllString(text, -1)
 								arabicword := arabicWordRegExp.FindAllString(text, -1)
 								greekwords = greekwords + len(words)
-								// 								wordcount := strconv.Itoa(len(words))
+								wordcount := strconv.Itoa(len(words))
 								latinwords = latinwords + len(latinword)
 								arabicwords = arabicwords + len(arabicword)
-								// latinwordcount := strconv.Itoa(len(latinword))
-								// arabicwordcount := strconv.Itoa(len(arabicword))
-								// latinwordcounts = append(latinwordcounts, latinwordcount)
-								// arabicwordcounts = append(arabicwordcounts, arabicwordcount)
+								latinwordcount := strconv.Itoa(len(latinword))
+								arabicwordcount := strconv.Itoa(len(arabicword))
+								latinwordcounts = append(latinwordcounts, latinwordcount)
+								arabicwordcounts = append(arabicwordcounts, arabicwordcount)
 								identifiers = append(identifiers, identifier)
 								texts = append(texts, text)
-								// greekwordcounts = append(greekwordcounts, wordcount)
+								greekwordcounts = append(greekwordcounts, wordcount)
 							}
 						}
 					}
@@ -715,16 +733,16 @@ func main() {
 							latinword := latinWordRegExp.FindAllString(text, -1)
 							arabicword := arabicWordRegExp.FindAllString(text, -1)
 							greekwords = greekwords + len(words)
-							// 								wordcount := strconv.Itoa(len(words))
+							wordcount := strconv.Itoa(len(words))
 							latinwords = latinwords + len(latinword)
 							arabicwords = arabicwords + len(arabicword)
-							// latinwordcount := strconv.Itoa(len(latinword))
-							// arabicwordcount := strconv.Itoa(len(arabicword))
-							// latinwordcounts = append(latinwordcounts, latinwordcount)
-							// arabicwordcounts = append(arabicwordcounts, arabicwordcount)
+							latinwordcount := strconv.Itoa(len(latinword))
+							arabicwordcount := strconv.Itoa(len(arabicword))
+							latinwordcounts = append(latinwordcounts, latinwordcount)
+							arabicwordcounts = append(arabicwordcounts, arabicwordcount)
 							identifiers = append(identifiers, identifier)
 							texts = append(texts, text)
-							// greekwordcounts = append(greekwordcounts, wordcount)
+							greekwordcounts = append(greekwordcounts, wordcount)
 						}
 					}
 				}
@@ -748,16 +766,16 @@ func main() {
 							latinword := latinWordRegExp.FindAllString(text, -1)
 							arabicword := arabicWordRegExp.FindAllString(text, -1)
 							greekwords = greekwords + len(words)
-							// 								wordcount := strconv.Itoa(len(words))
+							wordcount := strconv.Itoa(len(words))
 							latinwords = latinwords + len(latinword)
 							arabicwords = arabicwords + len(arabicword)
-							// latinwordcount := strconv.Itoa(len(latinword))
-							// arabicwordcount := strconv.Itoa(len(arabicword))
-							// latinwordcounts = append(latinwordcounts, latinwordcount)
-							// arabicwordcounts = append(arabicwordcounts, arabicwordcount)
+							latinwordcount := strconv.Itoa(len(latinword))
+							arabicwordcount := strconv.Itoa(len(arabicword))
+							latinwordcounts = append(latinwordcounts, latinwordcount)
+							arabicwordcounts = append(arabicwordcounts, arabicwordcount)
 							identifiers = append(identifiers, identifier)
 							texts = append(texts, text)
-							// greekwordcounts = append(greekwordcounts, wordcount)
+							greekwordcounts = append(greekwordcounts, wordcount)
 						}
 					}
 				}
@@ -777,16 +795,16 @@ func main() {
 					latinword := latinWordRegExp.FindAllString(text, -1)
 					arabicword := arabicWordRegExp.FindAllString(text, -1)
 					greekwords = greekwords + len(words)
-					// 								wordcount := strconv.Itoa(len(words))
+					wordcount := strconv.Itoa(len(words))
 					latinwords = latinwords + len(latinword)
 					arabicwords = arabicwords + len(arabicword)
-					// latinwordcount := strconv.Itoa(len(latinword))
-					// arabicwordcount := strconv.Itoa(len(arabicword))
-					// latinwordcounts = append(latinwordcounts, latinwordcount)
-					// arabicwordcounts = append(arabicwordcounts, arabicwordcount)
+					latinwordcount := strconv.Itoa(len(latinword))
+					arabicwordcount := strconv.Itoa(len(arabicword))
+					latinwordcounts = append(latinwordcounts, latinwordcount)
+					arabicwordcounts = append(arabicwordcounts, arabicwordcount)
 					identifiers = append(identifiers, identifier)
 					texts = append(texts, text)
-					// greekwordcounts = append(greekwordcounts, wordcount)
+					greekwordcounts = append(greekwordcounts, wordcount)
 				}
 			case querystring == "/tei:TEI/tei:text/tei:body/tei:div/tei:div/tei:div[@n='$1']":
 				fmt.Print(".")
@@ -804,16 +822,16 @@ func main() {
 					latinword := latinWordRegExp.FindAllString(text, -1)
 					arabicword := arabicWordRegExp.FindAllString(text, -1)
 					greekwords = greekwords + len(words)
-					// 								wordcount := strconv.Itoa(len(words))
+					wordcount := strconv.Itoa(len(words))
 					latinwords = latinwords + len(latinword)
 					arabicwords = arabicwords + len(arabicword)
-					// latinwordcount := strconv.Itoa(len(latinword))
-					// arabicwordcount := strconv.Itoa(len(arabicword))
-					// latinwordcounts = append(latinwordcounts, latinwordcount)
-					// arabicwordcounts = append(arabicwordcounts, arabicwordcount)
+					latinwordcount := strconv.Itoa(len(latinword))
+					arabicwordcount := strconv.Itoa(len(arabicword))
+					latinwordcounts = append(latinwordcounts, latinwordcount)
+					arabicwordcounts = append(arabicwordcounts, arabicwordcount)
 					identifiers = append(identifiers, identifier)
 					texts = append(texts, text)
-					// greekwordcounts = append(greekwordcounts, wordcount)
+					greekwordcounts = append(greekwordcounts, wordcount)
 				}
 			case querystring == "/tei:TEI/tei:text/tei:body/tei:div/tei:p/tei:seg[@n='$1']":
 				fmt.Print(".")
@@ -831,16 +849,16 @@ func main() {
 					latinword := latinWordRegExp.FindAllString(text, -1)
 					arabicword := arabicWordRegExp.FindAllString(text, -1)
 					greekwords = greekwords + len(words)
-					// 								wordcount := strconv.Itoa(len(words))
+					wordcount := strconv.Itoa(len(words))
 					latinwords = latinwords + len(latinword)
 					arabicwords = arabicwords + len(arabicword)
-					// latinwordcount := strconv.Itoa(len(latinword))
-					// arabicwordcount := strconv.Itoa(len(arabicword))
-					// latinwordcounts = append(latinwordcounts, latinwordcount)
-					// arabicwordcounts = append(arabicwordcounts, arabicwordcount)
+					latinwordcount := strconv.Itoa(len(latinword))
+					arabicwordcount := strconv.Itoa(len(arabicword))
+					latinwordcounts = append(latinwordcounts, latinwordcount)
+					arabicwordcounts = append(arabicwordcounts, arabicwordcount)
 					identifiers = append(identifiers, identifier)
 					texts = append(texts, text)
-					// greekwordcounts = append(greekwordcounts, wordcount)
+					greekwordcounts = append(greekwordcounts, wordcount)
 				}
 			case querystring == "/tei:TEI/tei:text/tei:body/tei:div/tei:p[@n='$1']":
 				fmt.Print(".")
@@ -858,16 +876,16 @@ func main() {
 					latinword := latinWordRegExp.FindAllString(text, -1)
 					arabicword := arabicWordRegExp.FindAllString(text, -1)
 					greekwords = greekwords + len(words)
-					// 								wordcount := strconv.Itoa(len(words))
+					wordcount := strconv.Itoa(len(words))
 					latinwords = latinwords + len(latinword)
 					arabicwords = arabicwords + len(arabicword)
-					// latinwordcount := strconv.Itoa(len(latinword))
-					// arabicwordcount := strconv.Itoa(len(arabicword))
-					// latinwordcounts = append(latinwordcounts, latinwordcount)
-					// arabicwordcounts = append(arabicwordcounts, arabicwordcount)
+					latinwordcount := strconv.Itoa(len(latinword))
+					arabicwordcount := strconv.Itoa(len(arabicword))
+					latinwordcounts = append(latinwordcounts, latinwordcount)
+					arabicwordcounts = append(arabicwordcounts, arabicwordcount)
 					identifiers = append(identifiers, identifier)
 					texts = append(texts, text)
-					// greekwordcounts = append(greekwordcounts, wordcount)
+					greekwordcounts = append(greekwordcounts, wordcount)
 				}
 			case querystring == "/tei:TEI/tei:text/tei:body/tei:div[@type='edition']/tei:div[@n='$1']" || querystring == "/tei:TEI/tei:text/tei:body/div[@type='edition']/div[@n='$1']" || querystring == "/tei:TEI/tei:text/tei:body/tei:div/tei:div[@n=\\'$1\\']" || querystring == "/tei:TEI/tei:text/tei:body/tei:div/tei:div[@n='$1']":
 				fmt.Print(".")
@@ -885,16 +903,16 @@ func main() {
 					latinword := latinWordRegExp.FindAllString(text, -1)
 					arabicword := arabicWordRegExp.FindAllString(text, -1)
 					greekwords = greekwords + len(words)
-					// 								wordcount := strconv.Itoa(len(words))
+					wordcount := strconv.Itoa(len(words))
 					latinwords = latinwords + len(latinword)
 					arabicwords = arabicwords + len(arabicword)
-					// latinwordcount := strconv.Itoa(len(latinword))
-					// arabicwordcount := strconv.Itoa(len(arabicword))
-					// latinwordcounts = append(latinwordcounts, latinwordcount)
-					// arabicwordcounts = append(arabicwordcounts, arabicwordcount)
+					latinwordcount := strconv.Itoa(len(latinword))
+					arabicwordcount := strconv.Itoa(len(arabicword))
+					latinwordcounts = append(latinwordcounts, latinwordcount)
+					arabicwordcounts = append(arabicwordcounts, arabicwordcount)
 					identifiers = append(identifiers, identifier)
 					texts = append(texts, text)
-					// greekwordcounts = append(greekwordcounts, wordcount)
+					greekwordcounts = append(greekwordcounts, wordcount)
 				}
 			case querystring == "/tei:TEI/tei:text/tei:body/tei:div/tei:div[@n='$1']/tei:p[@n='$2']":
 				fmt.Print(".")
@@ -915,16 +933,16 @@ func main() {
 						latinword := latinWordRegExp.FindAllString(text, -1)
 						arabicword := arabicWordRegExp.FindAllString(text, -1)
 						greekwords = greekwords + len(words)
-						// 								wordcount := strconv.Itoa(len(words))
+						wordcount := strconv.Itoa(len(words))
 						latinwords = latinwords + len(latinword)
 						arabicwords = arabicwords + len(arabicword)
-						// latinwordcount := strconv.Itoa(len(latinword))
-						// arabicwordcount := strconv.Itoa(len(arabicword))
-						// latinwordcounts = append(latinwordcounts, latinwordcount)
-						// arabicwordcounts = append(arabicwordcounts, arabicwordcount)
+						latinwordcount := strconv.Itoa(len(latinword))
+						arabicwordcount := strconv.Itoa(len(arabicword))
+						latinwordcounts = append(latinwordcounts, latinwordcount)
+						arabicwordcounts = append(arabicwordcounts, arabicwordcount)
 						identifiers = append(identifiers, identifier)
 						texts = append(texts, text)
-						// greekwordcounts = append(greekwordcounts, wordcount)
+						greekwordcounts = append(greekwordcounts, wordcount)
 					}
 				}
 			case querystring == "/tei:TEI/tei:text/tei:body/tei:div/tei:div[@n='$1']/tei:ab[@n='$2']":
@@ -946,16 +964,16 @@ func main() {
 						latinword := latinWordRegExp.FindAllString(text, -1)
 						arabicword := arabicWordRegExp.FindAllString(text, -1)
 						greekwords = greekwords + len(words)
-						// 								wordcount := strconv.Itoa(len(words))
+						wordcount := strconv.Itoa(len(words))
 						latinwords = latinwords + len(latinword)
 						arabicwords = arabicwords + len(arabicword)
-						// latinwordcount := strconv.Itoa(len(latinword))
-						// arabicwordcount := strconv.Itoa(len(arabicword))
-						// latinwordcounts = append(latinwordcounts, latinwordcount)
-						// arabicwordcounts = append(arabicwordcounts, arabicwordcount)
+						latinwordcount := strconv.Itoa(len(latinword))
+						arabicwordcount := strconv.Itoa(len(arabicword))
+						latinwordcounts = append(latinwordcounts, latinwordcount)
+						arabicwordcounts = append(arabicwordcounts, arabicwordcount)
 						identifiers = append(identifiers, identifier)
 						texts = append(texts, text)
-						// greekwordcounts = append(greekwordcounts, wordcount)
+						greekwordcounts = append(greekwordcounts, wordcount)
 					}
 				}
 			case querystring == "/tei:TEI/tei:text/tei:body/tei:div/tei:div[@n='$1']/tei:lg/tei:l[@n='$2']":
@@ -977,16 +995,16 @@ func main() {
 						latinword := latinWordRegExp.FindAllString(text, -1)
 						arabicword := arabicWordRegExp.FindAllString(text, -1)
 						greekwords = greekwords + len(words)
-						// 								wordcount := strconv.Itoa(len(words))
+						wordcount := strconv.Itoa(len(words))
 						latinwords = latinwords + len(latinword)
 						arabicwords = arabicwords + len(arabicword)
-						// latinwordcount := strconv.Itoa(len(latinword))
-						// arabicwordcount := strconv.Itoa(len(arabicword))
-						// latinwordcounts = append(latinwordcounts, latinwordcount)
-						// arabicwordcounts = append(arabicwordcounts, arabicwordcount)
+						latinwordcount := strconv.Itoa(len(latinword))
+						arabicwordcount := strconv.Itoa(len(arabicword))
+						latinwordcounts = append(latinwordcounts, latinwordcount)
+						arabicwordcounts = append(arabicwordcounts, arabicwordcount)
 						identifiers = append(identifiers, identifier)
 						texts = append(texts, text)
-						// greekwordcounts = append(greekwordcounts, wordcount)
+						greekwordcounts = append(greekwordcounts, wordcount)
 					}
 				}
 			case querystring == "/tei:TEI/tei:text/tei:body/tei:div/tei:div[@n='$1']/tei:div[@n='$2']" || querystring == "/tei:TEI/tei:text/tei:body/tei:div[@type='translation']/tei:div[@n='$1']/tei:div[@n='$2']" || querystring == "/tei:TEI/tei:text/tei:body/tei:div/tei:div[@n=\\'$1\\']/tei:div[@n=\\'$2\\']" || querystring == "/tei:TEI/tei:text/tei:body/div[@type='edition']/div[@n='$1']/div[@n='$2']" || querystring == "/tei:TEI/tei:text/tei:body/tei:div[@type='edition']/tei:div[@n='$1']/tei:div[@n='$2']":
@@ -1008,16 +1026,16 @@ func main() {
 						latinword := latinWordRegExp.FindAllString(text, -1)
 						arabicword := arabicWordRegExp.FindAllString(text, -1)
 						greekwords = greekwords + len(words)
-						// 								wordcount := strconv.Itoa(len(words))
+						wordcount := strconv.Itoa(len(words))
 						latinwords = latinwords + len(latinword)
 						arabicwords = arabicwords + len(arabicword)
-						// latinwordcount := strconv.Itoa(len(latinword))
-						// arabicwordcount := strconv.Itoa(len(arabicword))
-						// latinwordcounts = append(latinwordcounts, latinwordcount)
-						// arabicwordcounts = append(arabicwordcounts, arabicwordcount)
+						latinwordcount := strconv.Itoa(len(latinword))
+						arabicwordcount := strconv.Itoa(len(arabicword))
+						latinwordcounts = append(latinwordcounts, latinwordcount)
+						arabicwordcounts = append(arabicwordcounts, arabicwordcount)
 						identifiers = append(identifiers, identifier)
 						texts = append(texts, text)
-						// greekwordcounts = append(greekwordcounts, wordcount)
+						greekwordcounts = append(greekwordcounts, wordcount)
 					}
 				}
 			case querystring == "/tei:TEI/tei:text/tei:body/tei:div[@type='edition']/tei:div[@n='$1']/tei:div[@n='$2']/tei:div[@n='$3']" || querystring == "/tei:TEI/tei:text/tei:body/tei:div/tei:div[@n='$1']/tei:div[@n='$2']/tei:div[@n='$3']" || querystring == "/tei:TEI/tei:text/tei:body/div[@type='edition']/div[@n='$1']/div[@n='$2']/div[@n='$3']" || querystring == "/tei:TEI/tei:text/tei:body/tei:div/tei:div[@n=\\'$1\\']/tei:div[@n=\\'$2\\']/tei:div[@n=\\'$3\\']":
@@ -1040,16 +1058,16 @@ func main() {
 							latinword := latinWordRegExp.FindAllString(text, -1)
 							arabicword := arabicWordRegExp.FindAllString(text, -1)
 							greekwords = greekwords + len(words)
-							// 								wordcount := strconv.Itoa(len(words))
+							wordcount := strconv.Itoa(len(words))
 							latinwords = latinwords + len(latinword)
 							arabicwords = arabicwords + len(arabicword)
-							// latinwordcount := strconv.Itoa(len(latinword))
-							// arabicwordcount := strconv.Itoa(len(arabicword))
-							// latinwordcounts = append(latinwordcounts, latinwordcount)
-							// arabicwordcounts = append(arabicwordcounts, arabicwordcount)
+							latinwordcount := strconv.Itoa(len(latinword))
+							arabicwordcount := strconv.Itoa(len(arabicword))
+							latinwordcounts = append(latinwordcounts, latinwordcount)
+							arabicwordcounts = append(arabicwordcounts, arabicwordcount)
 							identifiers = append(identifiers, identifier)
 							texts = append(texts, text)
-							// greekwordcounts = append(greekwordcounts, wordcount)
+							greekwordcounts = append(greekwordcounts, wordcount)
 						}
 					}
 				}
@@ -1069,16 +1087,16 @@ func main() {
 					latinword := latinWordRegExp.FindAllString(text, -1)
 					arabicword := arabicWordRegExp.FindAllString(text, -1)
 					greekwords = greekwords + len(words)
-					// 								wordcount := strconv.Itoa(len(words))
+					wordcount := strconv.Itoa(len(words))
 					latinwords = latinwords + len(latinword)
 					arabicwords = arabicwords + len(arabicword)
-					// latinwordcount := strconv.Itoa(len(latinword))
-					// arabicwordcount := strconv.Itoa(len(arabicword))
-					// latinwordcounts = append(latinwordcounts, latinwordcount)
-					// arabicwordcounts = append(arabicwordcounts, arabicwordcount)
+					latinwordcount := strconv.Itoa(len(latinword))
+					arabicwordcount := strconv.Itoa(len(arabicword))
+					latinwordcounts = append(latinwordcounts, latinwordcount)
+					arabicwordcounts = append(arabicwordcounts, arabicwordcount)
 					identifiers = append(identifiers, identifier)
 					texts = append(texts, text)
-					// greekwordcounts = append(greekwordcounts, wordcount)
+					greekwordcounts = append(greekwordcounts, wordcount)
 				}
 			case querystring == "/tei:TEI.2/tei:text/tei:body/tei:div[@n=\\'$1\\']/tei:div[@n=\\'$2\\']" || querystring == "/tei:TEI/tei:text/tei:body/tei:div[@n=\\'$1\\']/tei:div[@n=\\'$2\\']":
 				fmt.Print(".")
@@ -1099,16 +1117,16 @@ func main() {
 						latinword := latinWordRegExp.FindAllString(text, -1)
 						arabicword := arabicWordRegExp.FindAllString(text, -1)
 						greekwords = greekwords + len(words)
-						// 								wordcount := strconv.Itoa(len(words))
+						wordcount := strconv.Itoa(len(words))
 						latinwords = latinwords + len(latinword)
 						arabicwords = arabicwords + len(arabicword)
-						// latinwordcount := strconv.Itoa(len(latinword))
-						// arabicwordcount := strconv.Itoa(len(arabicword))
-						// latinwordcounts = append(latinwordcounts, latinwordcount)
-						// arabicwordcounts = append(arabicwordcounts, arabicwordcount)
+						latinwordcount := strconv.Itoa(len(latinword))
+						arabicwordcount := strconv.Itoa(len(arabicword))
+						latinwordcounts = append(latinwordcounts, latinwordcount)
+						arabicwordcounts = append(arabicwordcounts, arabicwordcount)
 						identifiers = append(identifiers, identifier)
 						texts = append(texts, text)
-						// greekwordcounts = append(greekwordcounts, wordcount)
+						greekwordcounts = append(greekwordcounts, wordcount)
 					}
 				}
 			case querystring == "/tei:TEI.2/tei:text/tei:body/tei:div1[@n=\\'$1\\']/tei:div2[@n=\\'$2\\']/tei:div3[@n=\\'$3\\']":
@@ -1131,16 +1149,16 @@ func main() {
 							latinword := latinWordRegExp.FindAllString(text, -1)
 							arabicword := arabicWordRegExp.FindAllString(text, -1)
 							greekwords = greekwords + len(words)
-							// 								wordcount := strconv.Itoa(len(words))
+							wordcount := strconv.Itoa(len(words))
 							latinwords = latinwords + len(latinword)
 							arabicwords = arabicwords + len(arabicword)
-							// latinwordcount := strconv.Itoa(len(latinword))
-							// arabicwordcount := strconv.Itoa(len(arabicword))
-							// latinwordcounts = append(latinwordcounts, latinwordcount)
-							// arabicwordcounts = append(arabicwordcounts, arabicwordcount)
+							latinwordcount := strconv.Itoa(len(latinword))
+							arabicwordcount := strconv.Itoa(len(arabicword))
+							latinwordcounts = append(latinwordcounts, latinwordcount)
+							arabicwordcounts = append(arabicwordcounts, arabicwordcount)
 							identifiers = append(identifiers, identifier)
 							texts = append(texts, text)
-							// greekwordcounts = append(greekwordcounts, wordcount)
+							greekwordcounts = append(greekwordcounts, wordcount)
 						}
 					}
 				}
@@ -1164,16 +1182,16 @@ func main() {
 							latinword := latinWordRegExp.FindAllString(text, -1)
 							arabicword := arabicWordRegExp.FindAllString(text, -1)
 							greekwords = greekwords + len(words)
-							// 								wordcount := strconv.Itoa(len(words))
+							wordcount := strconv.Itoa(len(words))
 							latinwords = latinwords + len(latinword)
 							arabicwords = arabicwords + len(arabicword)
-							// latinwordcount := strconv.Itoa(len(latinword))
-							// arabicwordcount := strconv.Itoa(len(arabicword))
-							// latinwordcounts = append(latinwordcounts, latinwordcount)
-							// arabicwordcounts = append(arabicwordcounts, arabicwordcount)
+							latinwordcount := strconv.Itoa(len(latinword))
+							arabicwordcount := strconv.Itoa(len(arabicword))
+							latinwordcounts = append(latinwordcounts, latinwordcount)
+							arabicwordcounts = append(arabicwordcounts, arabicwordcount)
 							identifiers = append(identifiers, identifier)
 							texts = append(texts, text)
-							// greekwordcounts = append(greekwordcounts, wordcount)
+							greekwordcounts = append(greekwordcounts, wordcount)
 						}
 					}
 				}
@@ -1195,16 +1213,16 @@ func main() {
 						latinword := latinWordRegExp.FindAllString(text, -1)
 						arabicword := arabicWordRegExp.FindAllString(text, -1)
 						greekwords = greekwords + len(words)
-						// 								wordcount := strconv.Itoa(len(words))
+						wordcount := strconv.Itoa(len(words))
 						latinwords = latinwords + len(latinword)
 						arabicwords = arabicwords + len(arabicword)
-						// latinwordcount := strconv.Itoa(len(latinword))
-						// arabicwordcount := strconv.Itoa(len(arabicword))
-						// latinwordcounts = append(latinwordcounts, latinwordcount)
-						// arabicwordcounts = append(arabicwordcounts, arabicwordcount)
+						latinwordcount := strconv.Itoa(len(latinword))
+						arabicwordcount := strconv.Itoa(len(arabicword))
+						latinwordcounts = append(latinwordcounts, latinwordcount)
+						arabicwordcounts = append(arabicwordcounts, arabicwordcount)
 						identifiers = append(identifiers, identifier)
 						texts = append(texts, text)
-						// greekwordcounts = append(greekwordcounts, wordcount)
+						greekwordcounts = append(greekwordcounts, wordcount)
 					}
 				}
 			default:
@@ -1226,14 +1244,35 @@ func main() {
 		fmt.Println("See those: ", noxpath)
 	}
 	fmt.Println("Write nodes to file now:")
+
+	switch len(os.Args) {
+	case 2:
+		fmt.Println("Writing CEX-File")
+		writeCEX(outputFile, ctscatalog, identifiers, texts)
+	case 3:
+		fmt.Println("Writing CSV-File")
+		writeCSV(outputFile, identifiers, texts, greekwordcounts, latinwordcounts, arabicwordcounts)
+	default:
+		fmt.Println("Invalid number of arguments")
+	}
+
+	fmt.Println("Wrote", len(identifiers), "nodes.")
+	fmt.Println(greekwords, "words written in the Greek alphabet.")
+	fmt.Println(latinwords, "words written in the Latin alphabet.")
+	fmt.Println(arabicwords, "words written in the Arabic alphabet.")
+}
+
+func writeCEX(outputFile string, ctscatalog CTSCatalog, identifiers, texts []string) {
 	f, err := os.Create(outputFile)
 	check(err)
 	defer f.Close()
+
 	// cexversion
 	f.WriteString("#!cexversion")
 	f.WriteString("\n\n")
 	f.WriteString("3.0")
 	f.WriteString("\n\n")
+
 	// ctscatalog
 	f.WriteString("#!ctscatalog")
 	f.WriteString("\n\n")
@@ -1259,25 +1298,66 @@ func main() {
 	}
 	f.WriteString("\n")
 
+	// ctsdata
 	f.WriteString("#!ctsdata")
 	f.WriteString("\n\n")
 
 	for i := range identifiers {
+		newtext := strings.Replace(texts[i], "#", "", -1)
+		newtext = strings.Replace(newtext, `"`, `\"`, -1)
 		f.WriteString(identifiers[i])
 		f.WriteString("#")
-		f.WriteString(texts[i])
-		// f.WriteString("#")
-		// f.WriteString(greekwordcounts[i])
-		// f.WriteString("#")
-		// f.WriteString(latinwordcounts[i])
-		// f.WriteString("#")
-		// f.WriteString(arabicwordcounts[i])
+		f.WriteString(newtext)
 		f.WriteString("\n")
 	}
-	fmt.Println("Wrote", len(identifiers), "nodes.")
-	fmt.Println(greekwords, "words written in the Greek alphabet.")
-	fmt.Println(latinwords, "words written in the Latin alphabet.")
-	fmt.Println(arabicwords, "words written in the Arabic alphabet.")
+}
+
+func writeCSV(outputFile string, identifiers, texts, greekwordcounts, latinwordcounts, arabicwordcounts []string) {
+	f, err := os.Create(outputFile)
+	check(err)
+	defer f.Close()
+
+	f.WriteString("identifier")
+	f.WriteString("#")
+	f.WriteString("text")
+	f.WriteString("#")
+	f.WriteString("GreekWords")
+	f.WriteString("#")
+	f.WriteString("LatinWords")
+	f.WriteString("#")
+	f.WriteString("ArabicWords")
+	f.WriteString("#")
+	f.WriteString("Workgroup")
+	f.WriteString("#")
+	f.WriteString("Work")
+	f.WriteString("#")
+	f.WriteString("WorkVerbose")
+	f.WriteString("\n")
+
+	for i := range identifiers {
+		newtext := strings.Replace(texts[i], "#", "", -1)
+		newtext = strings.Replace(newtext, `"`, `\"`, -1)
+		f.WriteString(identifiers[i])
+		f.WriteString("#")
+		f.WriteString(newtext)
+		f.WriteString("#")
+		f.WriteString(greekwordcounts[i])
+		f.WriteString("#")
+		f.WriteString(latinwordcounts[i])
+		f.WriteString("#")
+		f.WriteString(arabicwordcounts[i])
+		f.WriteString("#")
+		baseurn := strings.Split(identifiers[i], ":")[0]
+		urnslice := strings.Split(baseurn, ".")
+		workgroup := urnslice[0]
+		work := strings.Join(urnslice[1:len(urnslice)], ".")
+		f.WriteString(workgroup)
+		f.WriteString("#")
+		f.WriteString(work)
+		f.WriteString("#")
+		f.WriteString(baseurn)
+		f.WriteString("\n")
+	}
 }
 
 func removeDuplicatesUnordered(elements []string) []string {
