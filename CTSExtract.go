@@ -259,7 +259,7 @@ func main() {
 		fmt.Println("Usage: CTSExtract [output-filename] [optionally: -CSV]")
 		os.Exit(3)
 	}
-
+	basereg := regexp.MustCompile(`urn:\p{L}+:\p{L}+:`)
 	tagsRegExp := regexp.MustCompile(`<[/]*[^>]*>`)
 	greekWordRegExp := regexp.MustCompile(`\p{Greek}+`)
 	latinWordRegExp := regexp.MustCompile(`\p{Latin}+`)
@@ -280,12 +280,17 @@ func main() {
 	noxpath := []string{}
 	xmlFiles := checkExt(".xml")
 	for _, file := range xmlFiles {
+		basestr := "urn:cts:greekLit:"
 
 		xmlFile, err := os.Open(file)
 		if err != nil {
 			fmt.Println(err)
 		}
 		byteValue, _ := ioutil.ReadAll(xmlFile)
+		match := basereg.FindStringSubmatch(string(byteValue))
+		if len(match) > 0 {
+			basestr = match[0]
+		}
 		var xpathinfo RefPattern
 		xml.Unmarshal(byteValue, &xpathinfo)
 		if len(xpathinfo.RefPattern) == 0 {
@@ -313,6 +318,7 @@ func main() {
 			querystring = strings.Replace(querystring, "#xpath(", "", -1)
 			querystring = strings.Replace(querystring, ")", "", -1)
 			urn := strings.Replace(path.Base(file), ".xml", "", -1)
+			urn = basestr + urn
 			ctscatalog.URN = append(ctscatalog.URN, urn)
 			ctscatalog.CitationScheme = append(ctscatalog.CitationScheme, kind)
 			group := strings.Join(xpathinfo.Author, ",")
@@ -337,6 +343,7 @@ func main() {
 				xml.Unmarshal(byteValue, &data)
 				baseIdentifier := path.Base(file)
 				baseIdentifier = strings.Replace(baseIdentifier, ".xml", "", -1)
+				baseIdentifier = basestr + baseIdentifier
 				for i := range data.Node {
 					for j := range data.Node[i].Node {
 						for k := range data.Node[i].Node[j].Node {
@@ -372,6 +379,7 @@ func main() {
 				xml.Unmarshal(byteValue, &data)
 				baseIdentifier := path.Base(file)
 				baseIdentifier = strings.Replace(baseIdentifier, ".xml", "", -1)
+				baseIdentifier = basestr + baseIdentifier
 				for i := range data.Node {
 					r := strings.NewReader(data.Node[i].InnerXML)
 					decoder := xml.NewDecoder(r)
@@ -414,6 +422,7 @@ func main() {
 				xml.Unmarshal(byteValue, &data)
 				baseIdentifier := path.Base(file)
 				baseIdentifier = strings.Replace(baseIdentifier, ".xml", "", -1)
+				baseIdentifier = basestr + baseIdentifier
 				for i := range data.Node {
 					r := strings.NewReader(data.Node[i].InnerXML)
 					decoder := xml.NewDecoder(r)
@@ -456,6 +465,7 @@ func main() {
 				xml.Unmarshal(byteValue, &data)
 				baseIdentifier := path.Base(file)
 				baseIdentifier = strings.Replace(baseIdentifier, ".xml", "", -1)
+				baseIdentifier = basestr + baseIdentifier
 				for i := range data.Node {
 					r := strings.NewReader(data.Node[i].InnerXML)
 					decoder := xml.NewDecoder(r)
@@ -498,6 +508,7 @@ func main() {
 				xml.Unmarshal(byteValue, &data)
 				baseIdentifier := path.Base(file)
 				baseIdentifier = strings.Replace(baseIdentifier, ".xml", "", -1)
+				baseIdentifier = basestr + baseIdentifier
 				for i := range data.Node {
 					r := strings.NewReader(data.Node[i].InnerXML)
 					decoder := xml.NewDecoder(r)
@@ -540,6 +551,7 @@ func main() {
 				xml.Unmarshal(byteValue, &data)
 				baseIdentifier := path.Base(file)
 				baseIdentifier = strings.Replace(baseIdentifier, ".xml", "", -1)
+				baseIdentifier = basestr + baseIdentifier
 				for i := range data.Node {
 					r := strings.NewReader(data.Node[i].InnerXML)
 					decoder := xml.NewDecoder(r)
@@ -582,6 +594,7 @@ func main() {
 				xml.Unmarshal(byteValue, &data)
 				baseIdentifier := path.Base(file)
 				baseIdentifier = strings.Replace(baseIdentifier, ".xml", "", -1)
+				baseIdentifier = basestr + baseIdentifier
 				for i := range data.Node {
 					ID2 := data.Node[i].Number
 					r := strings.NewReader(data.Node[i].InnerXML)
@@ -627,6 +640,7 @@ func main() {
 				xml.Unmarshal(byteValue, &data)
 				baseIdentifier := path.Base(file)
 				baseIdentifier = strings.Replace(baseIdentifier, ".xml", "", -1)
+				baseIdentifier = basestr + baseIdentifier
 				for i := range data.Node {
 					ID2 := data.Node[i].Number
 					for j := range data.Node[i].Node {
@@ -675,6 +689,7 @@ func main() {
 				xml.Unmarshal(byteValue, &data)
 				baseIdentifier := path.Base(file)
 				baseIdentifier = strings.Replace(baseIdentifier, ".xml", "", -1)
+				baseIdentifier = basestr + baseIdentifier
 				for i := range data.Node {
 					ID2 := data.Node[i].Number
 					r := strings.NewReader(data.Node[i].InnerXML)
@@ -720,6 +735,7 @@ func main() {
 				xml.Unmarshal(byteValue, &data)
 				baseIdentifier := path.Base(file)
 				baseIdentifier = strings.Replace(baseIdentifier, ".xml", "", -1)
+				baseIdentifier = basestr + baseIdentifier
 				for i := range data.Node {
 					for j := range data.Node[i].Node {
 						for k := range data.Node[i].Node[j].Node {
@@ -753,6 +769,7 @@ func main() {
 				xml.Unmarshal(byteValue, &data)
 				baseIdentifier := path.Base(file)
 				baseIdentifier = strings.Replace(baseIdentifier, ".xml", "", -1)
+				baseIdentifier = basestr + baseIdentifier
 				for i := range data.Node {
 					for j := range data.Node[i].Node {
 						for k := range data.Node[i].Node[j].Node {
@@ -921,6 +938,7 @@ func main() {
 				xml.Unmarshal(byteValue, &data)
 				baseIdentifier := path.Base(file)
 				baseIdentifier = strings.Replace(baseIdentifier, ".xml", "", -1)
+				baseIdentifier = basestr + baseIdentifier
 				for i := range data.Node {
 					for j := range data.Node[i].Node {
 						id := []string{data.Node[i].Number, data.Node[i].Node[j].Number}
@@ -952,6 +970,7 @@ func main() {
 				xml.Unmarshal(byteValue, &data)
 				baseIdentifier := path.Base(file)
 				baseIdentifier = strings.Replace(baseIdentifier, ".xml", "", -1)
+				baseIdentifier = basestr + baseIdentifier
 				for i := range data.Node {
 					for j := range data.Node[i].Node {
 						id := []string{data.Node[i].Number, data.Node[i].Node[j].Number}
@@ -983,6 +1002,7 @@ func main() {
 				xml.Unmarshal(byteValue, &data)
 				baseIdentifier := path.Base(file)
 				baseIdentifier = strings.Replace(baseIdentifier, ".xml", "", -1)
+				baseIdentifier = basestr + baseIdentifier
 				for i := range data.Node {
 					for j := range data.Node[i].Node {
 						id := []string{data.Node[i].Number, data.Node[i].Node[j].Number}
@@ -1014,6 +1034,7 @@ func main() {
 				xml.Unmarshal(byteValue, &data)
 				baseIdentifier := path.Base(file)
 				baseIdentifier = strings.Replace(baseIdentifier, ".xml", "", -1)
+				baseIdentifier = basestr + baseIdentifier
 				for i := range data.Node {
 					for j := range data.Node[i].Node {
 						id := []string{data.Node[i].Number, data.Node[i].Node[j].Number}
@@ -1045,6 +1066,7 @@ func main() {
 				xml.Unmarshal(byteValue, &data)
 				baseIdentifier := path.Base(file)
 				baseIdentifier = strings.Replace(baseIdentifier, ".xml", "", -1)
+				baseIdentifier = basestr + baseIdentifier
 				for i := range data.Node {
 					for j := range data.Node[i].Node {
 						for k := range data.Node[i].Node[j].Node {
@@ -1105,6 +1127,7 @@ func main() {
 				xml.Unmarshal(byteValue, &data)
 				baseIdentifier := path.Base(file)
 				baseIdentifier = strings.Replace(baseIdentifier, ".xml", "", -1)
+				baseIdentifier = basestr + baseIdentifier
 				for i := range data.Node {
 					for j := range data.Node[i].Node {
 						id := []string{data.Node[i].Number, data.Node[i].Node[j].Number}
@@ -1136,6 +1159,7 @@ func main() {
 				xml.Unmarshal(byteValue, &data)
 				baseIdentifier := path.Base(file)
 				baseIdentifier = strings.Replace(baseIdentifier, ".xml", "", -1)
+				baseIdentifier = basestr + baseIdentifier
 				for i := range data.Node {
 					for j := range data.Node[i].Node {
 						for k := range data.Node[i].Node[j].Node {
@@ -1169,6 +1193,7 @@ func main() {
 				xml.Unmarshal(byteValue, &data)
 				baseIdentifier := path.Base(file)
 				baseIdentifier = strings.Replace(baseIdentifier, ".xml", "", -1)
+				baseIdentifier = basestr + baseIdentifier
 				for i := range data.Node {
 					for j := range data.Node[i].Node {
 						for k := range data.Node[i].Node[j].Node {
@@ -1202,6 +1227,7 @@ func main() {
 				xml.Unmarshal(byteValue, &data)
 				baseIdentifier := path.Base(file)
 				baseIdentifier = strings.Replace(baseIdentifier, ".xml", "", -1)
+				baseIdentifier = basestr + baseIdentifier
 				for i := range data.Node {
 					for j := range data.Node[i].Node {
 						id := []string{data.Node[i].Number, data.Node[i].Node[j].Number}
