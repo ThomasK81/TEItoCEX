@@ -246,15 +246,9 @@ func main() {
 	outputFile := ""
 	switch len(os.Args) {
 	case 1:
-		fmt.Println("Usage: CTSExtract [output-filename] [optionally: -CSV]")
+		fmt.Println("Usage: CTSExtract [output-filename] [optionally: -CSV|JSON]")
 		os.Exit(3)
-	case 2:
-		outputFile = os.Args[1]
-	case 3:
-		if os.Args[2] != "-CSV" {
-			fmt.Println("Usage: CTSExtract [output-filename] [optionally: -CSV]")
-			os.Exit(3)
-		}
+	case 2,3:
 		outputFile = os.Args[1]
 	default:
 		fmt.Println("Usage: CTSExtract [output-filename] [optionally: -CSV]")
@@ -1252,8 +1246,14 @@ func main() {
 		fmt.Println("Writing CEX-File")
 		writeCEX(outputFile, ctscatalog, identifiers, texts)
 	case 3:
-		fmt.Println("Writing JSON-File")
-		writeJSON(outputFile, ctscatalog, identifiers, texts)
+		if os.Args[2] == "-CSV" {
+		  fmt.Println("Writing CSV-File")
+		  writeCSV(outputFile, identifiers, texts, greekwordcounts, latinwordcounts, arabicwordcounts)
+     }
+		if os.Args[2] == "-JSON" {
+		  fmt.Println("Writing JSON-File")
+		  writeJSON(outputFile, ctscatalog, identifiers, texts)
+    }
 	default:
 		fmt.Println("Invalid number of arguments")
 	}
