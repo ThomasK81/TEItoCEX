@@ -28,3 +28,17 @@ Wrote 186909 nodes.
 
 cd /path/to/TEI/data
 go run ~/src/go/src/TEItoCEX/CTSExtract.go ~/data/cex/foo.json -JSON
+
+
+# git handling
+
+This repo is maintained on github *and* bitbucket.
+
+# push to github
+git remote add github  https://github.com/tgoerke/TEItoCEX.git
+git push -u github JSON
+
+# push to playground
+git remote add playground ssh://git@code.gerdi-project.de:7999/playg/teitocex.git
+git push -u playground JSON
+
