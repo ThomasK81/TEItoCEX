@@ -22,3 +22,9 @@ Wrote 186909 nodes.
 # Linux and Windows
 
 `CTSExtract.go` is written in Go and can be easily compiled for your system. Flick me a message if you are interested (this is just a get it out before the holidays initial repo-setup).
+
+
+# Convert CEX to JSON
+
+cd /path/to/TEI/data
+go run ~/src/go/src/TEItoCEX/CTSExtract.go ~/data/cex/foo.json -JSON

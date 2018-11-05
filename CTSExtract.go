@@ -280,7 +280,7 @@ func main() {
 		if err != nil {
 			fmt.Println(err)
 		}
-    fmt.Println(file)
+    //fmt.Println(file)
 		byteValue, _ := ioutil.ReadAll(xmlFile)
 		var xpathinfo RefPattern
 		xml.Unmarshal(byteValue, &xpathinfo)
@@ -1315,21 +1315,15 @@ func writeCEX(outputFile string, ctscatalog CTSCatalog, identifiers, texts []str
 }
 
 func writeJSON(outputFile string, ctscatalog CTSCatalog, identifiers, texts []string) {
-  fmt.Println("JSON Output:");
 	f, err := os.Create(outputFile)
 	check(err)
 	defer f.Close()
 
-  /*
-	for i := range ctscatalog.WorkTitle {
-    fmt.Println(ctscatalog.WorkTitle[i])
-  }
-*/
   b, err := json.Marshal(ctscatalog)
-  fmt.Print("Error code = ");
-  fmt.Println(err);
-  fmt.Println(string(b));
+  //fmt.Print("Error code = "); fmt.Println(err)
+  f.WriteString(string(b))
 
+  /*
 	// ctscatalog
 	//f.WriteString("urn#citationScheme#groupName#workTitle#versionLabel#exemplarLabel#online#language")
 	for i := range ctscatalog.URN {
@@ -1342,6 +1336,7 @@ func writeJSON(outputFile string, ctscatalog CTSCatalog, identifiers, texts []st
 		f.WriteString(ctscatalog.Online[i])
 		f.WriteString(ctscatalog.Language[i])
 	}
+  */
 }
 
 func writeCSV(outputFile string, identifiers, texts, greekwordcounts, latinwordcounts, arabicwordcounts []string) {
