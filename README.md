@@ -31,11 +31,6 @@ cd /path/to/TEI/data
 go run ~/src/go/src/TEItoCEX/CTSExtract.go ~/data/cex/foo.json -JSON
 ```
 
-or
-```
-go run ~/src/go/src/TEItoCEX/CTSExtract.go ~/data/cex/oglp.json -JSON | sed -n '/[/,/]/p' > oglp.json
-```
-
 # git handling
 
 This repo is maintained on github *and* bitbucket.
