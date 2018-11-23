@@ -15,7 +15,14 @@ import (
 )
 
 type CTSCatalog struct {
-	URN, CitationScheme, GroupName, WorkTitle, VersionLabel, ExemplarLabel, Online, Language []string
+	URN  []string										`json:"urn"`
+	CitationScheme []string					`json:"citation_scheme"`
+	GroupName []string							`json:"group_name"`
+	WorkTitle []string							`json:"work_title"`
+	VersionLabel []string						`json:"version_label"`
+	ExemplarLabel []string					`json:"exemplar_label"`
+	Online []string									`json:"online"`
+	Language []string								`json:"language"`
 }
 
 type Metadata struct {
@@ -1323,7 +1330,7 @@ func writeJSON(outputFile string, ctscatalog CTSCatalog, identifiers, texts []st
   //fmt.Print("Error code = "); fmt.Println(err)
   f.WriteString(string(b))
 
-  /*
+/*
 	// ctscatalog
 	//f.WriteString("urn#citationScheme#groupName#workTitle#versionLabel#exemplarLabel#online#language")
 	for i := range ctscatalog.URN {
@@ -1336,7 +1343,7 @@ func writeJSON(outputFile string, ctscatalog CTSCatalog, identifiers, texts []st
 		f.WriteString(ctscatalog.Online[i])
 		f.WriteString(ctscatalog.Language[i])
 	}
-  */
+*/
 }
 
 func writeCSV(outputFile string, identifiers, texts, greekwordcounts, latinwordcounts, arabicwordcounts []string) {
