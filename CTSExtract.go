@@ -25,6 +25,17 @@ type CTSCatalog struct {
 	Language []string								`json:"language"`
 }
 
+type ExportDocument struct {
+	URN  string                   `json:"urn"`
+	CitationScheme string         `json:"citation_scheme"`
+	GroupName string              `json:"group_name"`
+	WorkTitle string              `json:"work_title"`
+	VersionLabel string           `json:"version_label"`
+	ExemplarLabel string          `json:"exemplar_label"`
+	Online string                 `json:"online"`
+	Language string               `json:"language"`
+}
+
 type Metadata struct {
 	Xpath string
 	Kind  string
@@ -258,7 +269,7 @@ func main() {
 	case 2,3:
 		outputFile = os.Args[1]
 	default:
-		fmt.Println("Usage: CTSExtract [output-filename] [optionally: -CSV]")
+		fmt.Println("Usage: CTSExtract [output-filename] [optionally: -CSV|JSON]")
 		os.Exit(3)
 	}
 
@@ -1236,7 +1247,6 @@ func main() {
 	}
 	result := removeDuplicatesUnordered(querystrings)
 	if len(result) != 0 {
-		fmt.Println()
 		fmt.Println("Not read:", len(result))
 		fmt.Println("Those XPATH are unknown:", result)
 	}
@@ -1259,7 +1269,7 @@ func main() {
      }
 		if os.Args[2] == "-JSON" {
 		  fmt.Println("Writing JSON-File")
-		  writeJSON(outputFile, ctscatalog, identifiers, texts)
+		  writeJSON(outputFile, ctscatalog)
     }
 	default:
 		fmt.Println("Invalid number of arguments")
@@ -1321,29 +1331,27 @@ func writeCEX(outputFile string, ctscatalog CTSCatalog, identifiers, texts []str
 	}
 }
 
-func writeJSON(outputFile string, ctscatalog CTSCatalog, identifiers, texts []string) {
-	f, err := os.Create(outputFile)
-	check(err)
-	defer f.Close()
+func writeJSON(outputFile string, ctscatalog CTSCatalog) {
+  f, err := os.Create(outputFile)
+  check(err)
+  defer f.Close()
 
-  b, err := json.Marshal(ctscatalog)
-  //fmt.Print("Error code = "); fmt.Println(err)
-  f.WriteString(string(b))
-
-/*
-	// ctscatalog
-	//f.WriteString("urn#citationScheme#groupName#workTitle#versionLabel#exemplarLabel#online#language")
-	for i := range ctscatalog.URN {
-		f.WriteString(ctscatalog.URN[i])
-		f.WriteString(ctscatalog.CitationScheme[i])
-		f.WriteString(ctscatalog.GroupName[i])
-		f.WriteString(ctscatalog.WorkTitle[i])
-		f.WriteString(ctscatalog.VersionLabel[i])
-		f.WriteString(ctscatalog.ExemplarLabel[i])
-		f.WriteString(ctscatalog.Online[i])
-		f.WriteString(ctscatalog.Language[i])
-	}
-*/
+  f.WriteString(string('['))
+  for i := range ctscatalog.URN {
+    var d ExportDocument
+    d.URN = ctscatalog.URN[i]
+    d.CitationScheme = ctscatalog.CitationScheme[i]
+    d.GroupName = ctscatalog.GroupName[i]
+    d.WorkTitle = ctscatalog.WorkTitle[i]
+    d.VersionLabel = ctscatalog.VersionLabel[i]
+    d.ExemplarLabel = ctscatalog.ExemplarLabel[i]
+    d.Online = ctscatalog.Online[i]
+    d.Language = ctscatalog.Language[i]
+    b, _ := json.Marshal(d)
+    f.WriteString(string(b)) 
+    if i < len(ctscatalog.URN)-1 { f.WriteString(string(',')) }
+  }
+  f.WriteString(string(']'))
 }
 
 func writeCSV(outputFile string, identifiers, texts, greekwordcounts, latinwordcounts, arabicwordcounts []string) {
