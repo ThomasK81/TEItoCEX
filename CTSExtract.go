@@ -36,6 +36,22 @@ type ExportDocument struct {
 	Language string               `json:"language"`
 }
 
+type OAI_DC_Record struct {
+	//XMLName  xml.Name `xml:"http://www.openarchives.org/OAI/2.0/oai_dc/ oai_dc:dc"`
+	XMLName  xml.Name `xml:"oai_dc:dc"`
+	Xmlns1    string  `xml:"xmlns:oai_dc:,attr"`
+	Xmlns2    string  `xml:"xmlns:dc,attr"`
+	Xmlns3    string  `xml:"xmlns:xsi,attr"`
+	Xmlns4    string  `xml:"xsi:schemaLocation,attr"`
+	Id        int     `xml:"id,attr"`
+	Title     string  `xml:"dc:title"`
+	Creator   string  `xml:"dc:creator"`
+	Subject   string  `xml:"dc:subject"`
+	Description [2]string `xml:"dc:description,omitempty"`
+	Comment string    `xml:",comment"`
+	Date    string    `xml:"dc:date"`
+}
+
 type Metadata struct {
 	Xpath string
 	Kind  string
@@ -1269,7 +1285,8 @@ func main() {
      }
 		if os.Args[2] == "-JSON" {
 		  fmt.Println("Writing JSON-File")
-		  writeJSON(outputFile, ctscatalog)
+		  //writeJSON(outputFile, ctscatalog)
+		  writeXML(outputFile, ctscatalog)
     }
 	default:
 		fmt.Println("Invalid number of arguments")
@@ -1329,6 +1346,49 @@ func writeCEX(outputFile string, ctscatalog CTSCatalog, identifiers, texts []str
 		f.WriteString(newtext)
 		f.WriteString("\n")
 	}
+}
+
+func writeXML(outputFile string, ctscatalog CTSCatalog) {
+  f, err := os.Create(outputFile)
+  check(err)
+  defer f.Close()
+
+  for i := range ctscatalog.URN {
+    var record OAI_DC_Record
+    record = OAI_DC_Record {
+      Xmlns1: "http://www.openarchives.org/OAI/2.0/oai_dc/",
+      Xmlns2: "http://purl.org/dc/elements/1.1/",
+      Xmlns3: "http://www.w3.org/2001/XMLSchema-instance",
+      Xmlns4: "http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd",
+      Title: "Shaka, when the walls fell",
+      Creator: "Dathon",
+      Subject: "Darmok and Jalad at Tanagra",
+      Date: "45047.2"}
+
+    record.Comment = " http://memory-alpha.wikia.com/wiki/Tamarian_language "
+    record.Description[0] = "The river Temarc"
+    record.Description[1] = "In winter."
+    record.Comment = string(i)
+    output, err := xml.MarshalIndent(record, "", " ")
+    if err != nil {
+      fmt.Printf("error: %v\n", err)
+    }
+    os.Stdout.Write(output)
+  }
+/**
+    var d ExportDocument
+    d.URN = ctscatalog.URN[i]
+    d.CitationScheme = ctscatalog.CitationScheme[i]
+    d.GroupName = ctscatalog.GroupName[i]
+    d.WorkTitle = ctscatalog.WorkTitle[i]
+    d.VersionLabel = ctscatalog.VersionLabel[i]
+    d.ExemplarLabel = ctscatalog.ExemplarLabel[i]
+    d.Online = ctscatalog.Online[i]
+    d.Language = ctscatalog.Language[i]
+    b, _ := json.Marshal(d)
+  }
+
+**/
 }
 
 func writeJSON(outputFile string, ctscatalog CTSCatalog) {
