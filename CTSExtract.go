@@ -281,12 +281,12 @@ func main() {
 	outputFile := ""
 	switch len(os.Args) {
 	case 1:
-		fmt.Println("Usage: CTSExtract [output-filename] [optionally: -CSV|JSON]")
+		fmt.Println("Usage: CTSExtract [output-filename] [optionally: -CSV|JSON|XML]")
 		os.Exit(3)
 	case 2,3:
 		outputFile = os.Args[1]
 	default:
-		fmt.Println("Usage: CTSExtract [output-filename] [optionally: -CSV|JSON]")
+		fmt.Println("Usage: CTSExtract [output-filename] [optionally: -CSV|JSON]|XML")
 		os.Exit(3)
 	}
 
@@ -1286,7 +1286,10 @@ func main() {
      }
 		if os.Args[2] == "-JSON" {
 		  fmt.Println("Writing JSON-File")
-		  //writeJSON(outputFile, ctscatalog)
+		  writeJSON(outputFile, ctscatalog)
+    }
+		if os.Args[2] == "-XML" {
+		  fmt.Println("Writing XML-File")
 		  writeXML(outputFile, ctscatalog)
     }
 	default:
@@ -1375,22 +1378,9 @@ func writeXML(outputFile string, ctscatalog CTSCatalog) {
     if err != nil {
       fmt.Printf("error: %v\n", err)
     }
-    os.Stdout.Write(output)
+    //os.Stdout.Write(output)
+    f.Write(output) 
   }
-/**
-    var d ExportDocument
-    d.URN = ctscatalog.URN[i]
-    d.CitationScheme = ctscatalog.CitationScheme[i]
-    d.GroupName = ctscatalog.GroupName[i]
-    d.WorkTitle = ctscatalog.WorkTitle[i]
-    d.VersionLabel = ctscatalog.VersionLabel[i]
-    d.ExemplarLabel = ctscatalog.ExemplarLabel[i]
-    d.Online = ctscatalog.Online[i]
-    d.Language = ctscatalog.Language[i]
-    b, _ := json.Marshal(d)
-  }
-
-**/
 }
 
 func writeJSON(outputFile string, ctscatalog CTSCatalog) {
