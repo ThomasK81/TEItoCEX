@@ -50,6 +50,7 @@ type OAI_DC_Record struct {
 	Description [2]string `xml:"dc:description,omitempty"`
 	Comment string    `xml:",comment"`
 	Date    string    `xml:"dc:date"`
+  Language string   `xml:"dc:language"`
 }
 
 type Metadata struct {
@@ -1360,15 +1361,16 @@ func writeXML(outputFile string, ctscatalog CTSCatalog) {
       Xmlns2: "http://purl.org/dc/elements/1.1/",
       Xmlns3: "http://www.w3.org/2001/XMLSchema-instance",
       Xmlns4: "http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd",
-      Title: "Shaka, when the walls fell",
-      Creator: "Dathon",
-      Subject: "Darmok and Jalad at Tanagra",
-      Date: "45047.2"}
+      Creator: ctscatalog.GroupName[i],
+      Title: ctscatalog.WorkTitle[i],
+      Subject: ctscatalog.ExemplarLabel[i],
+      Language: ctscatalog.Language[i],
+      }
 
-    record.Comment = " http://memory-alpha.wikia.com/wiki/Tamarian_language "
-    record.Description[0] = "The river Temarc"
-    record.Description[1] = "In winter."
-    record.Comment = string(i)
+    record.Comment = "http://opengreekandlatin.github.io/First1KGreek"
+    record.Description[0] = ctscatalog.URN[i]
+    record.Description[1] = "http://cts.dh.uni-leipzig.de/text/urn:cts:greekLit:" + ctscatalog.URN[i]
+    //record.Comment = string(i)
     output, err := xml.MarshalIndent(record, "", " ")
     if err != nil {
       fmt.Printf("error: %v\n", err)
