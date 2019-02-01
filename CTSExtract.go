@@ -12,6 +12,8 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+  "database/sql"
+  _ "github.com/mattn/go-sqlite3"
 )
 
 type CTSCatalog struct {
@@ -1292,6 +1294,10 @@ func main() {
 		  fmt.Println("Writing XML-File")
 		  writeXML(outputFile, ctscatalog)
     }
+		if os.Args[2] == "-SQL" {
+		  fmt.Println("Writing SQLite DB")
+		  writeSQL(outputFile, ctscatalog)
+    }
 	default:
 		fmt.Println("Invalid number of arguments")
 	}
@@ -1350,6 +1356,18 @@ func writeCEX(outputFile string, ctscatalog CTSCatalog, identifiers, texts []str
 		f.WriteString(newtext)
 		f.WriteString("\n")
 	}
+}
+
+func writeSQL(outputFile string, ctscatalog CTSCatalog) {
+
+  db, err := sql.Open("sqlite3", outputFile)
+  check(err)
+  records, _  := db.Prepare("INSERT INTO records(id, item_id, metadata_format_id, xml, state) values(? ,1, 1, ?, 1)")
+
+  records.Exec("9", "foobarbaz")
+  check(err)
+  db.Close()
+
 }
 
 func writeXML(outputFile string, ctscatalog CTSCatalog) {
