@@ -44,7 +44,7 @@ takes 1m45 on my laptop
 time (cd ~/data/tlg0090/ ; go run ~/src/go/src/TEItoCEX/CTSExtract.go ~/data/tlg0090.xml -XML )
 ```
 
-# populate OAI-PMH server (records, items)
+# populate OAI-PMH server
 
 ## small data set for tests
 ```
@@ -58,12 +58,12 @@ This repo is maintained on github *and* bitbucket.
 ## push to github
 ```
 git remote add github  https://github.com/tgoerke/TEItoCEX.git
-git push -u github JSON
+git push -u github SQL
 ```
 
 ## push to playground
 ```
 git remote add playground ssh://git@code.gerdi-project.de:7999/playg/teitocex.git
-git push -u playground JSON
+git push -u playground SQL
 ```
 

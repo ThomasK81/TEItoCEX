@@ -41,7 +41,7 @@ type ExportDocument struct {
 type OAI_DC_Record struct {
 	//XMLName  xml.Name `xml:"http://www.openarchives.org/OAI/2.0/oai_dc/ oai_dc:dc"`
 	XMLName  xml.Name `xml:"oai_dc:dc"`
-	Xmlns1    string  `xml:"xmlns:oai_dc:,attr"`
+	Xmlns1    string  `xml:"xmlns:oai_dc,attr"`
 	Xmlns2    string  `xml:"xmlns:dc,attr"`
 	Xmlns3    string  `xml:"xmlns:xsi,attr"`
 	Xmlns4    string  `xml:"xsi:schemaLocation,attr"`
@@ -51,7 +51,7 @@ type OAI_DC_Record struct {
 	Subject   string  `xml:"dc:subject"`
 	Description [2]string `xml:"dc:description,omitempty"`
 	Comment string    `xml:",comment"`
-	Date    string    `xml:"dc:date"`
+	//Date    string    `xml:"dc:date"`
   Language string   `xml:"dc:language"`
 }
 
@@ -1358,24 +1358,7 @@ func writeCEX(outputFile string, ctscatalog CTSCatalog, identifiers, texts []str
 	}
 }
 
-func writeSQL(outputFile string, ctscatalog CTSCatalog) {
-
-  db, err := sql.Open("sqlite3", outputFile)
-  check(err)
-  records, _  := db.Prepare("INSERT INTO records(id, item_id, metadata_format_id, xml, state) values(? ,1, 1, ?, 1)")
-
-  records.Exec("9", "foobarbaz")
-  check(err)
-  db.Close()
-
-}
-
-func writeXML(outputFile string, ctscatalog CTSCatalog) {
-  f, err := os.Create(outputFile)
-  check(err)
-  defer f.Close()
-
-  for i := range ctscatalog.URN {
+func getRecord(ctscatalog CTSCatalog, i int) OAI_DC_Record {
     var record OAI_DC_Record
     record = OAI_DC_Record {
       Xmlns1: "http://www.openarchives.org/OAI/2.0/oai_dc/",
@@ -1384,15 +1367,43 @@ func writeXML(outputFile string, ctscatalog CTSCatalog) {
       Xmlns4: "http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd",
       Creator: ctscatalog.GroupName[i],
       Title: ctscatalog.WorkTitle[i],
-      Subject: ctscatalog.ExemplarLabel[i],
+      Subject: ctscatalog.URN[i],
       Language: ctscatalog.Language[i],
       }
 
-    record.Comment = "http://opengreekandlatin.github.io/First1KGreek"
-    record.Description[0] = ctscatalog.URN[i]
-    record.Description[1] = "http://cts.dh.uni-leipzig.de/text/urn:cts:greekLit:" + ctscatalog.URN[i]
-    //record.Comment = string(i)
-    output, err := xml.MarshalIndent(record, "", " ")
+    //record.Comment = "http://opengreekandlatin.github.io/First1KGreek"
+    record.Description[0] = "http://cts.dh.uni-leipzig.de/text/urn:cts:greekLit:" + ctscatalog.URN[i]
+    return(record)
+}
+
+func writeSQL(outputFile string, ctscatalog CTSCatalog) {
+
+  db, err := sql.Open("sqlite3", outputFile)
+  check(err)
+  records, _  := db.Prepare("INSERT INTO records(id, item_id, metadata_format_id, xml, state) values(? ,?, 1, ?, 1)")
+  items, _  := db.Prepare("INSERT INTO items(id, id_ext, state, timestamp) values(? ,?, 'active', '1970-01-01 00:00:00')")
+
+  for i := range ctscatalog.URN {
+    output, err := xml.MarshalIndent(getRecord(ctscatalog, i), "", " ")
+    if err != nil {
+      fmt.Printf("error: %v\n", err)
+    }
+    //os.Stdout.Write(output)
+    fmt.Print(".")
+    records.Exec(i, i, output)
+    items.Exec(i, ctscatalog.URN[i])
+    check(err)
+  }
+  db.Close()
+
+}
+func writeXML(outputFile string, ctscatalog CTSCatalog) {
+  f, err := os.Create(outputFile)
+  check(err)
+  defer f.Close()
+
+  for i := range ctscatalog.URN {
+    output, err := xml.MarshalIndent(getRecord(ctscatalog, i), "", " ")
     if err != nil {
       fmt.Printf("error: %v\n", err)
     }
