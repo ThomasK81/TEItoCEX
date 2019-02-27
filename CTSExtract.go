@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/xml"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -14,7 +15,25 @@ import (
 )
 
 type CTSCatalog struct {
-	URN, CitationScheme, GroupName, WorkTitle, VersionLabel, ExemplarLabel, Online, Language []string
+	URN  []string										`json:"urn"`
+	CitationScheme []string					`json:"citation_scheme"`
+	GroupName []string							`json:"group_name"`
+	WorkTitle []string							`json:"work_title"`
+	VersionLabel []string						`json:"version_label"`
+	ExemplarLabel []string					`json:"exemplar_label"`
+	Online []string									`json:"online"`
+	Language []string								`json:"language"`
+}
+
+type ExportDocument struct {
+	URN  string                   `json:"urn"`
+	CitationScheme string         `json:"citation_scheme"`
+	GroupName string              `json:"group_name"`
+	WorkTitle string              `json:"work_title"`
+	VersionLabel string           `json:"version_label"`
+	ExemplarLabel string          `json:"exemplar_label"`
+	Online string                 `json:"online"`
+	Language string               `json:"language"`
 }
 
 type Metadata struct {
@@ -245,18 +264,12 @@ func main() {
 	outputFile := ""
 	switch len(os.Args) {
 	case 1:
-		fmt.Println("Usage: CTSExtract [output-filename] [optionally: -CSV]")
+		fmt.Println("Usage: CTSExtract [output-filename] [optionally: -CSV|JSON]")
 		os.Exit(3)
-	case 2:
-		outputFile = os.Args[1]
-	case 3:
-		if os.Args[2] != "-CSV" {
-			fmt.Println("Usage: CTSExtract [output-filename] [optionally: -CSV]")
-			os.Exit(3)
-		}
+	case 2,3:
 		outputFile = os.Args[1]
 	default:
-		fmt.Println("Usage: CTSExtract [output-filename] [optionally: -CSV]")
+		fmt.Println("Usage: CTSExtract [output-filename] [optionally: -CSV|JSON]")
 		os.Exit(3)
 	}
 	basereg := regexp.MustCompile(`urn:\p{L}+:\p{L}+:`)
@@ -286,6 +299,7 @@ func main() {
 		if err != nil {
 			fmt.Println(err)
 		}
+    //fmt.Println(file)
 		byteValue, _ := ioutil.ReadAll(xmlFile)
 		match := basereg.FindStringSubmatch(string(byteValue))
 		if len(match) > 0 {
@@ -337,7 +351,7 @@ func main() {
 			ctscatalog.Language = append(ctscatalog.Language, language)
 			switch {
 			case querystring == "/tei:TEI/tei:text/tei:body/tei:div/tei:div[@n='$1']/tei:div[@n='$2']/tei:div[@n='$3']/tei:p[@n='$4']":
-				fmt.Print(".")
+				fmt.Print("1")
 				filecount = filecount + 1
 				var data StartTEI4p
 				xml.Unmarshal(byteValue, &data)
@@ -373,7 +387,7 @@ func main() {
 					}
 				}
 			case querystring == "/tei:TEI/tei:text/tei:body/tei:div//tei:div[@n='$1']" || querystring == "/tei:TEI/tei:text/tei:body/tei:div//tei:div[@n=\\'$1\\']":
-				fmt.Print(".")
+				fmt.Print("2")
 				filecount = filecount + 1
 				var data QueryTEI1
 				xml.Unmarshal(byteValue, &data)
@@ -416,7 +430,7 @@ func main() {
 					}
 				}
 			case querystring == "/tei:TEI/tei:text/tei:body/tei:div/tei:div//tei:div[@subtype='fragment'][@n='$1']":
-				fmt.Print(".")
+				fmt.Print("3")
 				filecount = filecount + 1
 				var data QueryTEI1div
 				xml.Unmarshal(byteValue, &data)
@@ -459,7 +473,7 @@ func main() {
 					}
 				}
 			case querystring == "/tei:TEI/tei:text/tei:body/tei:div/tei:p//tei:l[@n='$1']":
-				fmt.Print(".")
+				fmt.Print("4")
 				filecount = filecount + 1
 				var data QueryTEI1p
 				xml.Unmarshal(byteValue, &data)
@@ -502,7 +516,7 @@ func main() {
 					}
 				}
 			case querystring == "/tei:TEI/tei:text/tei:body/tei:div//tei:l[@n='$1']" || querystring == "/tei:TEI/tei:text/tei:body/tei:div//tei:l[@n=\\'$1\\']":
-				fmt.Print(".")
+				fmt.Print("5")
 				filecount = filecount + 1
 				var data QueryTEI1
 				xml.Unmarshal(byteValue, &data)
@@ -545,7 +559,7 @@ func main() {
 					}
 				}
 			case querystring == "/tei:TEI/tei:text/tei:body//tei:l[@n=\\'$1\\']":
-				fmt.Print(".")
+				fmt.Print("6")
 				filecount = filecount + 1
 				var data QueryTEI0
 				xml.Unmarshal(byteValue, &data)
@@ -588,7 +602,7 @@ func main() {
 					}
 				}
 			case querystring == "/tei:TEI/tei:text/tei:body/tei:div/tei:div[@n='$1']//tei:div[@n='$2']":
-				fmt.Print(".")
+				fmt.Print("7")
 				filecount = filecount + 1
 				var data QueryTEI2
 				xml.Unmarshal(byteValue, &data)
@@ -634,7 +648,7 @@ func main() {
 					}
 				}
 			case querystring == "/tei:TEI/tei:text/tei:body/tei:div/tei:div[@n='$1']/tei:div[@n='$2']//tei:div[@n='$3']":
-				fmt.Print(".")
+				fmt.Print("8")
 				filecount = filecount + 1
 				var data QueryTEI3
 				xml.Unmarshal(byteValue, &data)
@@ -683,7 +697,7 @@ func main() {
 					}
 				}
 			case querystring == "/tei:TEI/tei:text/tei:body/tei:div/tei:div[@n='$1']//tei:l[@n='$2']":
-				fmt.Print(".")
+				fmt.Print("9")
 				filecount = filecount + 1
 				var data QueryTEI2
 				xml.Unmarshal(byteValue, &data)
@@ -729,7 +743,7 @@ func main() {
 					}
 				}
 			case querystring == "/tei:TEI/tei:text/tei:body/tei:div/tei:div[@n='$1']/tei:div[@n='$2']/tei:p[@n='$3']" || querystring == "/tei:TEI/tei:text/tei:body/tei:div[@type='edition']/tei:div[@n=\\'$1\\']/tei:div[@n=\\'$2\\']/tei:p[@n=\\'$3\\']":
-				fmt.Print(".")
+				fmt.Print("A")
 				filecount = filecount + 1
 				var data StartTEI3p
 				xml.Unmarshal(byteValue, &data)
@@ -763,7 +777,7 @@ func main() {
 					}
 				}
 			case querystring == "/tei:TEI/tei:text/tei:body/tei:div/tei:div[@n='$1']/tei:p[@n='$2']/tei:cit[@n='$3']":
-				fmt.Print(".")
+				fmt.Print("B")
 				filecount = filecount + 1
 				var data StartTEI3cit
 				xml.Unmarshal(byteValue, &data)
@@ -797,7 +811,7 @@ func main() {
 					}
 				}
 			case querystring == "/tei:TEI/tei:text/tei:body/tei:div[@n=\\'$1\\']" || querystring == "/tei:TEI.2/tei:text/tei:body/tei:div[@n=\\'$1\\']":
-				fmt.Print(".")
+				fmt.Print("C")
 				filecount = filecount + 1
 				var data StartTEI1Direct
 				xml.Unmarshal(byteValue, &data)
@@ -824,7 +838,7 @@ func main() {
 					greekwordcounts = append(greekwordcounts, wordcount)
 				}
 			case querystring == "/tei:TEI/tei:text/tei:body/tei:div/tei:div/tei:div[@n='$1']":
-				fmt.Print(".")
+				fmt.Print("D")
 				filecount = filecount + 1
 				var data StartTEI1Late
 				xml.Unmarshal(byteValue, &data)
@@ -851,7 +865,7 @@ func main() {
 					greekwordcounts = append(greekwordcounts, wordcount)
 				}
 			case querystring == "/tei:TEI/tei:text/tei:body/tei:div/tei:p/tei:seg[@n='$1']":
-				fmt.Print(".")
+				fmt.Print("E")
 				filecount = filecount + 1
 				var data StartTEI1pseg
 				xml.Unmarshal(byteValue, &data)
@@ -878,7 +892,7 @@ func main() {
 					greekwordcounts = append(greekwordcounts, wordcount)
 				}
 			case querystring == "/tei:TEI/tei:text/tei:body/tei:div/tei:p[@n='$1']":
-				fmt.Print(".")
+				fmt.Print("F")
 				filecount = filecount + 1
 				var data StartTEI1p
 				xml.Unmarshal(byteValue, &data)
@@ -905,7 +919,7 @@ func main() {
 					greekwordcounts = append(greekwordcounts, wordcount)
 				}
 			case querystring == "/tei:TEI/tei:text/tei:body/tei:div[@type='edition']/tei:div[@n='$1']" || querystring == "/tei:TEI/tei:text/tei:body/div[@type='edition']/div[@n='$1']" || querystring == "/tei:TEI/tei:text/tei:body/tei:div/tei:div[@n=\\'$1\\']" || querystring == "/tei:TEI/tei:text/tei:body/tei:div/tei:div[@n='$1']":
-				fmt.Print(".")
+				fmt.Print("G")
 				filecount = filecount + 1
 				var data StartTEI1
 				xml.Unmarshal(byteValue, &data)
@@ -932,7 +946,7 @@ func main() {
 					greekwordcounts = append(greekwordcounts, wordcount)
 				}
 			case querystring == "/tei:TEI/tei:text/tei:body/tei:div/tei:div[@n='$1']/tei:p[@n='$2']":
-				fmt.Print(".")
+				fmt.Print("H")
 				filecount = filecount + 1
 				var data StartTEI2p
 				xml.Unmarshal(byteValue, &data)
@@ -964,7 +978,7 @@ func main() {
 					}
 				}
 			case querystring == "/tei:TEI/tei:text/tei:body/tei:div/tei:div[@n='$1']/tei:ab[@n='$2']":
-				fmt.Print(".")
+				fmt.Print("I")
 				filecount = filecount + 1
 				var data StartTEI2ab
 				xml.Unmarshal(byteValue, &data)
@@ -996,7 +1010,7 @@ func main() {
 					}
 				}
 			case querystring == "/tei:TEI/tei:text/tei:body/tei:div/tei:div[@n='$1']/tei:lg/tei:l[@n='$2']":
-				fmt.Print(".")
+				fmt.Print("J")
 				filecount = filecount + 1
 				var data StartTEI2lgl
 				xml.Unmarshal(byteValue, &data)
@@ -1028,7 +1042,7 @@ func main() {
 					}
 				}
 			case querystring == "/tei:TEI/tei:text/tei:body/tei:div/tei:div[@n='$1']/tei:div[@n='$2']" || querystring == "/tei:TEI/tei:text/tei:body/tei:div[@type='translation']/tei:div[@n='$1']/tei:div[@n='$2']" || querystring == "/tei:TEI/tei:text/tei:body/tei:div/tei:div[@n=\\'$1\\']/tei:div[@n=\\'$2\\']" || querystring == "/tei:TEI/tei:text/tei:body/div[@type='edition']/div[@n='$1']/div[@n='$2']" || querystring == "/tei:TEI/tei:text/tei:body/tei:div[@type='edition']/tei:div[@n='$1']/tei:div[@n='$2']":
-				fmt.Print(".")
+				fmt.Print("K")
 				filecount = filecount + 1
 				var data StartTEI2
 				xml.Unmarshal(byteValue, &data)
@@ -1060,7 +1074,7 @@ func main() {
 					}
 				}
 			case querystring == "/tei:TEI/tei:text/tei:body/tei:div[@type='edition']/tei:div[@n='$1']/tei:div[@n='$2']/tei:div[@n='$3']" || querystring == "/tei:TEI/tei:text/tei:body/tei:div/tei:div[@n='$1']/tei:div[@n='$2']/tei:div[@n='$3']" || querystring == "/tei:TEI/tei:text/tei:body/div[@type='edition']/div[@n='$1']/div[@n='$2']/div[@n='$3']" || querystring == "/tei:TEI/tei:text/tei:body/tei:div/tei:div[@n=\\'$1\\']/tei:div[@n=\\'$2\\']/tei:div[@n=\\'$3\\']":
-				fmt.Print(".")
+				fmt.Print("L")
 				filecount = filecount + 1
 				var data StartTEI3
 				xml.Unmarshal(byteValue, &data)
@@ -1094,7 +1108,7 @@ func main() {
 					}
 				}
 			case querystring == "/tei:TEI/tei:text/tei:body/tei:div/tei:l[@n='$1']":
-				fmt.Print(".")
+				fmt.Print("M")
 				filecount = filecount + 1
 				var data StartTEI1Poem
 				xml.Unmarshal(byteValue, &data)
@@ -1121,7 +1135,7 @@ func main() {
 					greekwordcounts = append(greekwordcounts, wordcount)
 				}
 			case querystring == "/tei:TEI.2/tei:text/tei:body/tei:div[@n=\\'$1\\']/tei:div[@n=\\'$2\\']" || querystring == "/tei:TEI/tei:text/tei:body/tei:div[@n=\\'$1\\']/tei:div[@n=\\'$2\\']":
-				fmt.Print(".")
+				fmt.Print("N")
 				filecount = filecount + 1
 				var data StartTEI2direct
 				xml.Unmarshal(byteValue, &data)
@@ -1153,7 +1167,7 @@ func main() {
 					}
 				}
 			case querystring == "/tei:TEI.2/tei:text/tei:body/tei:div1[@n=\\'$1\\']/tei:div2[@n=\\'$2\\']/tei:div3[@n=\\'$3\\']":
-				fmt.Print(".")
+				fmt.Print("O")
 				filecount = filecount + 1
 				var data StartTEI3DirectNumbered
 				xml.Unmarshal(byteValue, &data)
@@ -1187,7 +1201,7 @@ func main() {
 					}
 				}
 			case querystring == "/tei:TEI/tei:text/tei:body/tei:div/tei:div[@n='$1']/tei:div[@n='$2']/tei:l[@n='$3']":
-				fmt.Print(".")
+				fmt.Print("P")
 				filecount = filecount + 1
 				var data StartTEI3poem
 				xml.Unmarshal(byteValue, &data)
@@ -1221,7 +1235,7 @@ func main() {
 					}
 				}
 			case querystring == "/tei:TEI/tei:text/tei:body/tei:div/tei:div[@n='$1']/tei:l[@n='$2']":
-				fmt.Print(".")
+				fmt.Print("Q")
 				filecount = filecount + 1
 				var data StartTEI2Poem
 				xml.Unmarshal(byteValue, &data)
@@ -1259,7 +1273,6 @@ func main() {
 	}
 	result := removeDuplicatesUnordered(querystrings)
 	if len(result) != 0 {
-		fmt.Println()
 		fmt.Println("Not read:", len(result))
 		fmt.Println("Those XPATH are unknown:", result)
 	}
@@ -1276,8 +1289,14 @@ func main() {
 		fmt.Println("Writing CEX-File")
 		writeCEX(outputFile, ctscatalog, identifiers, texts)
 	case 3:
-		fmt.Println("Writing CSV-File")
-		writeCSV(outputFile, identifiers, texts, greekwordcounts, latinwordcounts, arabicwordcounts)
+		if os.Args[2] == "-CSV" {
+		  fmt.Println("Writing CSV-File")
+		  writeCSV(outputFile, identifiers, texts, greekwordcounts, latinwordcounts, arabicwordcounts)
+     }
+		if os.Args[2] == "-JSON" {
+		  fmt.Println("Writing JSON-File")
+		  writeJSON(outputFile, ctscatalog)
+    }
 	default:
 		fmt.Println("Invalid number of arguments")
 	}
@@ -1336,6 +1355,29 @@ func writeCEX(outputFile string, ctscatalog CTSCatalog, identifiers, texts []str
 		f.WriteString(newtext)
 		f.WriteString("\n")
 	}
+}
+
+func writeJSON(outputFile string, ctscatalog CTSCatalog) {
+  f, err := os.Create(outputFile)
+  check(err)
+  defer f.Close()
+
+  f.WriteString(string('['))
+  for i := range ctscatalog.URN {
+    var d ExportDocument
+    d.URN = ctscatalog.URN[i]
+    d.CitationScheme = ctscatalog.CitationScheme[i]
+    d.GroupName = ctscatalog.GroupName[i]
+    d.WorkTitle = ctscatalog.WorkTitle[i]
+    d.VersionLabel = ctscatalog.VersionLabel[i]
+    d.ExemplarLabel = ctscatalog.ExemplarLabel[i]
+    d.Online = ctscatalog.Online[i]
+    d.Language = ctscatalog.Language[i]
+    b, _ := json.Marshal(d)
+    f.WriteString(string(b)) 
+    if i < len(ctscatalog.URN)-1 { f.WriteString(string(',')) }
+  }
+  f.WriteString(string(']'))
 }
 
 func writeCSV(outputFile string, identifiers, texts, greekwordcounts, latinwordcounts, arabicwordcounts []string) {
