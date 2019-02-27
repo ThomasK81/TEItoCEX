@@ -52,7 +52,9 @@ type OAI_DC_Record struct {
 	Description [2]string `xml:"dc:description,omitempty"`
 	Comment string    `xml:",comment"`
 	//Date    string    `xml:"dc:date"`
-  Language string   `xml:"dc:language"`
+  Language  string  `xml:"dc:language"`
+  ViewURL   string  `xml:"dc:view-url"`
+  Publisher string  `xml:"dc:publisher"`
 }
 
 type Metadata struct {
@@ -1398,6 +1400,8 @@ func getRecord(ctscatalog CTSCatalog, i int) OAI_DC_Record {
       }
 
     //record.Comment = "http://opengreekandlatin.github.io/First1KGreek"
+    record.Publisher = "OGLP"
+    record.ViewURL  = "http://cts.dh.uni-leipzig.de/text/urn:cts:greekLit:" + ctscatalog.URN[i]
     record.Description[0] = "http://cts.dh.uni-leipzig.de/text/urn:cts:greekLit:" + ctscatalog.URN[i]
     return(record)
 }
