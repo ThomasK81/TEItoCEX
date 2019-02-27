@@ -21,49 +21,10 @@ Wrote 186909 nodes.
 
 # Linux and Windows
 
-`CTSExtract.go` is written in Go and can be easily compiled for your system. Flick me a message if you are interested (this is just a get it out before the holidays initial repo-setup).
+CTSExtract.go` is written in Go and can be easily compiled for your system. Flick me a message if you are interested (this is just a get it out before the holidays initial repo-setup).
 
-
-# Convert CEX to JSON
-
-```
-cd /path/to/TEI/data
-go run ~/src/go/src/TEItoCEX/CTSExtract.go ~/data/cex/foo.json -JSON
-```
-
-# Convert CEX to XML (OAI-DC)
-
-## All nodes from opengreekandlatin.github.io/First1KGreek (186909)
-```
-time (cd ~/data/First1KGreek/ ; go run ~/src/go/src/TEItoCEX/CTSExtract.go ~/data/First1KGreek.xml -XML )
-takes 1m45 on my laptop
-```
-
-## small data set for tests
-```
-time (cd ~/data/tlg0090/ ; go run ~/src/go/src/TEItoCEX/CTSExtract.go ~/data/tlg0090.xml -XML )
-```
-
-# populate OAI-PMH server
-
-## small data set for tests
-```
-time (cd ~/data/tlg0090/ ; go run ~/src/go/src/TEItoCEX/CTSExtract.go ~/src/gerdi/oaipmhserver/oglp/oglp.db -SQL )
-```
-
-# git handling
-
-This repo is maintained on github *and* bitbucket.
-
-## push to github
-```
-git remote add github  https://github.com/tgoerke/TEItoCEX.git
-git push -u github SQL
-```
-
-## push to playground
-```
-git remote add playground ssh://git@code.gerdi-project.de:7999/playg/teitocex.git
-git push -u playground SQL
-```
-
+# Extract OAI-PMH compliant metadata
+CTSExtract can be used to extract metadta fields of TEI-XML annotated
+input. Currently export to CSV, JSON and XML is possible. 
+The XML format complies to OAI-DC format (DataCite). Please see
+OAI-PMH.md for information on OAI-PMH compliant hosting.
