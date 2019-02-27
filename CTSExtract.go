@@ -1408,21 +1408,25 @@ func getRecord(ctscatalog CTSCatalog, i int) OAI_DC_Record {
 
 func writeSQL(outputFile string, ctscatalog CTSCatalog) {
 
+  var record OAI_DC_Record
   db, err := sql.Open("sqlite3", outputFile)
   check(err)
   records, _  := db.Prepare("INSERT INTO records(id, item_id, metadata_format_id, xml, state) values(? ,?, 1, ?, 1)")
   items, _  := db.Prepare("INSERT INTO items(id, id_ext, state, timestamp) values(? ,?, 'active', '1970-01-01 00:00:00')")
 
   for i := range ctscatalog.URN {
-    output, err := xml.MarshalIndent(getRecord(ctscatalog, i), "", " ")
-    if err != nil {
-      fmt.Printf("error: %v\n", err)
+    record = getRecord(ctscatalog, i)
+    if record.Creator != "" {
+      output, err := xml.MarshalIndent(record, "", " ")
+      if err != nil {
+        fmt.Printf("error: %v\n", err)
+      }
+      //os.Stdout.Write(output)
+      fmt.Print(".")
+      records.Exec(i, i, output)
+      items.Exec(i, ctscatalog.URN[i])
+      check(err)
     }
-    //os.Stdout.Write(output)
-    fmt.Print(".")
-    records.Exec(i, i, output)
-    items.Exec(i, ctscatalog.URN[i])
-    check(err)
   }
   db.Close()
 
