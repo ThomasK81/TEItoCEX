@@ -31,6 +31,19 @@ cd /path/to/TEI/data
 go run ~/src/go/src/TEItoCEX/CTSExtract.go ~/data/cex/foo.json -JSON
 ```
 
+# Convert CEX to XML (OAI-DC)
+
+# All nodes from opengreekandlatin.github.io/First1KGreek (186909)
+```
+time (cd ~/data/First1KGreek/ ; go run ~/src/go/src/TEItoCEX/CTSExtract.go ~/data/First1KGreek.xml -XML )
+takes 1m45 on my laptop
+```
+
+# small data set for tests
+```
+time ((cd ~/data/tlg0090/ ; go run ~/src/go/src/TEItoCEX/CTSExtract.go ~/data/tlg0090.xml -XML )
+```
+
 # git handling
 
 This repo is maintained on github *and* bitbucket.
