@@ -155,6 +155,25 @@ type StartTEI4p struct {
 	Node []TEI4n4p `xml:"text>body>div>div"`
 }
 
+type TEI4n2div struct {
+	Node   []SmallestNode `xml:"div"`
+	Number string         `xml:"n,attr"`
+}
+
+type TEI4n3div struct {
+	Node   []TEI4n2div `xml:"div"`
+	Number string      `xml:"n,attr"`
+}
+
+type TEI4n4div struct {
+	Node   []TEI4n3div `xml:"div"`
+	Number string      `xml:"n,attr"`
+}
+
+type StartTEI4div struct {
+	Node []TEI4n4div `xml:"text>body>div>div"`
+}
+
 type StartTEI2p struct {
 	Node []TEI3n2p `xml:"text>body>div>div"`
 }
@@ -189,6 +208,15 @@ type TEI3n3cit struct {
 
 type StartTEI3cit struct {
 	Node []TEI3n3cit `xml:"text>body>div>div"`
+}
+
+type TEI3n3divcit struct {
+	Node   []TEI3n2cit `xml:"div"`
+	Number string      `xml:"n,attr"`
+}
+
+type StartTEI3divcit struct {
+	Node []TEI3n3divcit `xml:"text>body>div>div"`
 }
 
 type StartTEI2 struct {
@@ -283,6 +311,8 @@ type QueryInfo struct {
 }
 
 func main() {
+	scheme := make(map[string]int)
+	tempscheme := ""
 	outputFile := ""
 	switch len(os.Args) {
 	case 1:
@@ -372,7 +402,9 @@ func main() {
 			ctscatalog.Language = append(ctscatalog.Language, language)
 			switch {
 			case querystring == "/tei:TEI/tei:text/tei:body/tei:div/tei:div[@n='$1']/tei:div[@n='$2']/tei:div[@n='$3']/tei:p[@n='$4']":
-				fmt.Print("1")
+				tempscheme = "1"
+				fmt.Print(tempscheme)
+				scheme[tempscheme] = scheme[tempscheme] + 1
 				filecount = filecount + 1
 				var data StartTEI4p
 				xml.Unmarshal(byteValue, &data)
@@ -405,7 +437,9 @@ func main() {
 					}
 				}
 			case querystring == "/tei:TEI/tei:text/tei:body/tei:div//tei:div[@n='$1']" || querystring == "/tei:TEI/tei:text/tei:body/tei:div//tei:div[@n=\\'$1\\']":
-				fmt.Print("2")
+				tempscheme = "2"
+				fmt.Print(tempscheme)
+				scheme[tempscheme] = scheme[tempscheme] + 1
 				filecount = filecount + 1
 				var data QueryTEI1
 				xml.Unmarshal(byteValue, &data)
@@ -445,7 +479,9 @@ func main() {
 					}
 				}
 			case querystring == "/tei:TEI/tei:text/tei:body/tei:div/tei:div//tei:div[@subtype='fragment'][@n='$1']":
-				fmt.Print("3")
+				tempscheme = "3"
+				fmt.Print(tempscheme)
+				scheme[tempscheme] = scheme[tempscheme] + 1
 				filecount = filecount + 1
 				var data QueryTEI1div
 				xml.Unmarshal(byteValue, &data)
@@ -485,7 +521,9 @@ func main() {
 					}
 				}
 			case querystring == "/tei:TEI/tei:text/tei:body/tei:div/tei:p//tei:l[@n='$1']":
-				fmt.Print("4")
+				tempscheme = "4"
+				fmt.Print(tempscheme)
+				scheme[tempscheme] = scheme[tempscheme] + 1
 				filecount = filecount + 1
 				var data QueryTEI1p
 				xml.Unmarshal(byteValue, &data)
@@ -524,8 +562,10 @@ func main() {
 						}
 					}
 				}
-			case querystring == "/tei:TEI/tei:text/tei:body/tei:div//tei:l[@n='$1']" || querystring == "/tei:TEI/tei:text/tei:body/tei:div//tei:l[@n=\\'$1\\']":
-				fmt.Print("5")
+			case querystring == "/tei:TEI/tei:text/tei:body/tei:div//tei:l[@n='$1']" || querystring == "/tei:TEI/tei:text/tei:body/tei:div//tei:l[@n=\\'$1\\']" || querystring == "/tei:TEI/tei:text/tei:body/tei:div/tei:sp/tei:l[@n='$1']":
+				tempscheme = "5"
+				fmt.Print(tempscheme)
+				scheme[tempscheme] = scheme[tempscheme] + 1
 				filecount = filecount + 1
 				var data QueryTEI1
 				xml.Unmarshal(byteValue, &data)
@@ -565,7 +605,9 @@ func main() {
 					}
 				}
 			case querystring == "/tei:TEI/tei:text/tei:body//tei:l[@n=\\'$1\\']":
-				fmt.Print("6")
+				tempscheme = "6"
+				fmt.Print(tempscheme)
+				scheme[tempscheme] = scheme[tempscheme] + 1
 				filecount = filecount + 1
 				var data QueryTEI0
 				xml.Unmarshal(byteValue, &data)
@@ -605,7 +647,9 @@ func main() {
 					}
 				}
 			case querystring == "/tei:TEI/tei:text/tei:body/tei:div/tei:div[@n='$1']//tei:div[@n='$2']":
-				fmt.Print("7")
+				tempscheme = "7"
+				fmt.Print(tempscheme)
+				scheme[tempscheme] = scheme[tempscheme] + 1
 				filecount = filecount + 1
 				var data QueryTEI2
 				xml.Unmarshal(byteValue, &data)
@@ -648,7 +692,9 @@ func main() {
 					}
 				}
 			case querystring == "/tei:TEI/tei:text/tei:body/tei:div/tei:div[@n='$1']/tei:div[@n='$2']//tei:div[@n='$3']":
-				fmt.Print("8")
+				tempscheme = "8"
+				fmt.Print(tempscheme)
+				scheme[tempscheme] = scheme[tempscheme] + 1
 				filecount = filecount + 1
 				var data QueryTEI3
 				xml.Unmarshal(byteValue, &data)
@@ -694,7 +740,9 @@ func main() {
 					}
 				}
 			case querystring == "/tei:TEI/tei:text/tei:body/tei:div/tei:div[@n='$1']//tei:l[@n='$2']":
-				fmt.Print("9")
+				tempscheme = "9"
+				fmt.Print(tempscheme)
+				scheme[tempscheme] = scheme[tempscheme] + 1
 				filecount = filecount + 1
 				var data QueryTEI2
 				xml.Unmarshal(byteValue, &data)
@@ -737,7 +785,9 @@ func main() {
 					}
 				}
 			case querystring == "/tei:TEI/tei:text/tei:body/tei:div/tei:div[@n='$1']/tei:div[@n='$2']/tei:p[@n='$3']" || querystring == "/tei:TEI/tei:text/tei:body/tei:div[@type='edition']/tei:div[@n=\\'$1\\']/tei:div[@n=\\'$2\\']/tei:p[@n=\\'$3\\']":
-				fmt.Print("A")
+				tempscheme = "A"
+				fmt.Print(tempscheme)
+				scheme[tempscheme] = scheme[tempscheme] + 1
 				filecount = filecount + 1
 				var data StartTEI3p
 				xml.Unmarshal(byteValue, &data)
@@ -768,7 +818,9 @@ func main() {
 					}
 				}
 			case querystring == "/tei:TEI/tei:text/tei:body/tei:div/tei:div[@n='$1']/tei:p[@n='$2']/tei:cit[@n='$3']":
-				fmt.Print("B")
+				tempscheme = "B"
+				fmt.Print(tempscheme)
+				scheme[tempscheme] = scheme[tempscheme] + 1
 				filecount = filecount + 1
 				var data StartTEI3cit
 				xml.Unmarshal(byteValue, &data)
@@ -799,7 +851,9 @@ func main() {
 					}
 				}
 			case querystring == "/tei:TEI/tei:text/tei:body/tei:div[@n=\\'$1\\']" || querystring == "/tei:TEI.2/tei:text/tei:body/tei:div[@n=\\'$1\\']":
-				fmt.Print("C")
+				tempscheme = "C"
+				fmt.Print(tempscheme)
+				scheme[tempscheme] = scheme[tempscheme] + 1
 				filecount = filecount + 1
 				var data StartTEI1Direct
 				xml.Unmarshal(byteValue, &data)
@@ -824,7 +878,9 @@ func main() {
 					greekwordcounts = append(greekwordcounts, wordcount)
 				}
 			case querystring == "/tei:TEI/tei:text/tei:body/tei:div/tei:div/tei:div[@n='$1']":
-				fmt.Print("D")
+				tempscheme = "D"
+				fmt.Print(tempscheme)
+				scheme[tempscheme] = scheme[tempscheme] + 1
 				filecount = filecount + 1
 				var data StartTEI1Late
 				xml.Unmarshal(byteValue, &data)
@@ -849,7 +905,9 @@ func main() {
 					greekwordcounts = append(greekwordcounts, wordcount)
 				}
 			case querystring == "/tei:TEI/tei:text/tei:body/tei:div/tei:p/tei:seg[@n='$1']":
-				fmt.Print("E")
+				tempscheme = "E"
+				fmt.Print(tempscheme)
+				scheme[tempscheme] = scheme[tempscheme] + 1
 				filecount = filecount + 1
 				var data StartTEI1pseg
 				xml.Unmarshal(byteValue, &data)
@@ -874,7 +932,9 @@ func main() {
 					greekwordcounts = append(greekwordcounts, wordcount)
 				}
 			case querystring == "/tei:TEI/tei:text/tei:body/tei:div/tei:p[@n='$1']":
-				fmt.Print("F")
+				tempscheme = "F"
+				fmt.Print(tempscheme)
+				scheme[tempscheme] = scheme[tempscheme] + 1
 				filecount = filecount + 1
 				var data StartTEI1p
 				xml.Unmarshal(byteValue, &data)
@@ -899,7 +959,9 @@ func main() {
 					greekwordcounts = append(greekwordcounts, wordcount)
 				}
 			case querystring == "/tei:TEI/tei:text/tei:body/tei:div[@type='edition']/tei:div[@n='$1']" || querystring == "/tei:TEI/tei:text/tei:body/div[@type='edition']/div[@n='$1']" || querystring == "/tei:TEI/tei:text/tei:body/tei:div/tei:div[@n=\\'$1\\']" || querystring == "/tei:TEI/tei:text/tei:body/tei:div/tei:div[@n='$1']":
-				fmt.Print("G")
+				tempscheme = "G"
+				fmt.Print(tempscheme)
+				scheme[tempscheme] = scheme[tempscheme] + 1
 				filecount = filecount + 1
 				var data StartTEI1
 				xml.Unmarshal(byteValue, &data)
@@ -924,7 +986,9 @@ func main() {
 					greekwordcounts = append(greekwordcounts, wordcount)
 				}
 			case querystring == "/tei:TEI/tei:text/tei:body/tei:div/tei:div[@n='$1']/tei:p[@n='$2']":
-				fmt.Print("H")
+				tempscheme = "H"
+				fmt.Print(tempscheme)
+				scheme[tempscheme] = scheme[tempscheme] + 1
 				filecount = filecount + 1
 				var data StartTEI2p
 				xml.Unmarshal(byteValue, &data)
@@ -953,7 +1017,9 @@ func main() {
 					}
 				}
 			case querystring == "/tei:TEI/tei:text/tei:body/tei:div/tei:div[@n='$1']/tei:ab[@n='$2']":
-				fmt.Print("I")
+				tempscheme = "I"
+				fmt.Print(tempscheme)
+				scheme[tempscheme] = scheme[tempscheme] + 1
 				filecount = filecount + 1
 				var data StartTEI2ab
 				xml.Unmarshal(byteValue, &data)
@@ -982,7 +1048,9 @@ func main() {
 					}
 				}
 			case querystring == "/tei:TEI/tei:text/tei:body/tei:div/tei:div[@n='$1']/tei:lg/tei:l[@n='$2']":
-				fmt.Print("J")
+				tempscheme = "J"
+				fmt.Print(tempscheme)
+				scheme[tempscheme] = scheme[tempscheme] + 1
 				filecount = filecount + 1
 				var data StartTEI2lgl
 				xml.Unmarshal(byteValue, &data)
@@ -1011,7 +1079,9 @@ func main() {
 					}
 				}
 			case querystring == "/tei:TEI/tei:text/tei:body/tei:div/tei:div[@n='$1']/tei:div[@n='$2']" || querystring == "/tei:TEI/tei:text/tei:body/tei:div[@type='translation']/tei:div[@n='$1']/tei:div[@n='$2']" || querystring == "/tei:TEI/tei:text/tei:body/tei:div/tei:div[@n=\\'$1\\']/tei:div[@n=\\'$2\\']" || querystring == "/tei:TEI/tei:text/tei:body/div[@type='edition']/div[@n='$1']/div[@n='$2']" || querystring == "/tei:TEI/tei:text/tei:body/tei:div[@type='edition']/tei:div[@n='$1']/tei:div[@n='$2']":
-				fmt.Print("K")
+				tempscheme = "K"
+				fmt.Print(tempscheme)
+				scheme[tempscheme] = scheme[tempscheme] + 1
 				filecount = filecount + 1
 				var data StartTEI2
 				xml.Unmarshal(byteValue, &data)
@@ -1040,7 +1110,9 @@ func main() {
 					}
 				}
 			case querystring == "/tei:TEI/tei:text/tei:body/tei:div[@type='edition']/tei:div[@n='$1']/tei:div[@n='$2']/tei:div[@n='$3']" || querystring == "/tei:TEI/tei:text/tei:body/tei:div/tei:div[@n='$1']/tei:div[@n='$2']/tei:div[@n='$3']" || querystring == "/tei:TEI/tei:text/tei:body/div[@type='edition']/div[@n='$1']/div[@n='$2']/div[@n='$3']" || querystring == "/tei:TEI/tei:text/tei:body/tei:div/tei:div[@n=\\'$1\\']/tei:div[@n=\\'$2\\']/tei:div[@n=\\'$3\\']":
-				fmt.Print("L")
+				tempscheme = "L"
+				fmt.Print(tempscheme)
+				scheme[tempscheme] = scheme[tempscheme] + 1
 				filecount = filecount + 1
 				var data StartTEI3
 				xml.Unmarshal(byteValue, &data)
@@ -1071,7 +1143,9 @@ func main() {
 					}
 				}
 			case querystring == "/tei:TEI/tei:text/tei:body/tei:div/tei:l[@n='$1']":
-				fmt.Print("M")
+				tempscheme = "M"
+				fmt.Print(tempscheme)
+				scheme[tempscheme] = scheme[tempscheme] + 1
 				filecount = filecount + 1
 				var data StartTEI1Poem
 				xml.Unmarshal(byteValue, &data)
@@ -1096,7 +1170,9 @@ func main() {
 					greekwordcounts = append(greekwordcounts, wordcount)
 				}
 			case querystring == "/tei:TEI.2/tei:text/tei:body/tei:div[@n=\\'$1\\']/tei:div[@n=\\'$2\\']" || querystring == "/tei:TEI/tei:text/tei:body/tei:div[@n=\\'$1\\']/tei:div[@n=\\'$2\\']":
-				fmt.Print("N")
+				tempscheme = "N"
+				fmt.Print(tempscheme)
+				scheme[tempscheme] = scheme[tempscheme] + 1
 				filecount = filecount + 1
 				var data StartTEI2direct
 				xml.Unmarshal(byteValue, &data)
@@ -1125,7 +1201,9 @@ func main() {
 					}
 				}
 			case querystring == "/tei:TEI.2/tei:text/tei:body/tei:div1[@n=\\'$1\\']/tei:div2[@n=\\'$2\\']/tei:div3[@n=\\'$3\\']":
-				fmt.Print("O")
+				tempscheme = "O"
+				fmt.Print(tempscheme)
+				scheme[tempscheme] = scheme[tempscheme] + 1
 				filecount = filecount + 1
 				var data StartTEI3DirectNumbered
 				xml.Unmarshal(byteValue, &data)
@@ -1156,7 +1234,9 @@ func main() {
 					}
 				}
 			case querystring == "/tei:TEI/tei:text/tei:body/tei:div/tei:div[@n='$1']/tei:div[@n='$2']/tei:l[@n='$3']":
-				fmt.Print("P")
+				tempscheme = "P"
+				fmt.Print(tempscheme)
+				scheme[tempscheme] = scheme[tempscheme] + 1
 				filecount = filecount + 1
 				var data StartTEI3poem
 				xml.Unmarshal(byteValue, &data)
@@ -1187,7 +1267,9 @@ func main() {
 					}
 				}
 			case querystring == "/tei:TEI/tei:text/tei:body/tei:div/tei:div[@n='$1']/tei:l[@n='$2']":
-				fmt.Print("Q")
+				tempscheme = "Q"
+				fmt.Print(tempscheme)
+				scheme[tempscheme] = scheme[tempscheme] + 1
 				filecount = filecount + 1
 				var data StartTEI2Poem
 				xml.Unmarshal(byteValue, &data)
@@ -1212,6 +1294,74 @@ func main() {
 						identifiers = append(identifiers, identifier)
 						texts = append(texts, text)
 						greekwordcounts = append(greekwordcounts, wordcount)
+					}
+				}
+			case querystring == "/tei:TEI/tei:text/tei:body/tei:div/tei:div[@n='$1']/tei:div[@n='$2']/tei:div[@n='$3']/tei:div[@n='$4']":
+				tempscheme = "R"
+				fmt.Print(tempscheme)
+				scheme[tempscheme] = scheme[tempscheme] + 1
+				filecount = filecount + 1
+				var data StartTEI4div
+				xml.Unmarshal(byteValue, &data)
+				for i := range data.Node {
+					for j := range data.Node[i].Node {
+						for k := range data.Node[i].Node[j].Node {
+							for l := range data.Node[i].Node[j].Node[k].Node {
+								id := []string{data.Node[i].Number, data.Node[i].Node[j].Number, data.Node[i].Node[j].Node[k].Number, data.Node[i].Node[j].Node[k].Node[l].Number}
+								identifier := strings.Join(id, ".")
+								identifier = strings.Join([]string{urn, identifier}, ":")
+								text := data.Node[i].Node[j].Node[k].Node[l].InnerXML
+								text = stringcleaning(text)
+
+								words := greekWordRegExp.FindAllString(text, -1)
+								latinword := latinWordRegExp.FindAllString(text, -1)
+								arabicword := arabicWordRegExp.FindAllString(text, -1)
+								greekwords = greekwords + len(words)
+								wordcount := strconv.Itoa(len(words))
+								latinwords = latinwords + len(latinword)
+								arabicwords = arabicwords + len(arabicword)
+								latinwordcount := strconv.Itoa(len(latinword))
+								arabicwordcount := strconv.Itoa(len(arabicword))
+								latinwordcounts = append(latinwordcounts, latinwordcount)
+								arabicwordcounts = append(arabicwordcounts, arabicwordcount)
+								identifiers = append(identifiers, identifier)
+								texts = append(texts, text)
+								greekwordcounts = append(greekwordcounts, wordcount)
+							}
+						}
+					}
+				}
+			case querystring == "/tei:TEI/tei:text/tei:body/tei:div/tei:div[@n='$1']/tei:div[@n='$2']/tei:cit[@n='$3']":
+				tempscheme = "S"
+				fmt.Print(tempscheme)
+				scheme[tempscheme] = scheme[tempscheme] + 1
+				filecount = filecount + 1
+				var data StartTEI3divcit
+				xml.Unmarshal(byteValue, &data)
+				for i := range data.Node {
+					for j := range data.Node[i].Node {
+						for k := range data.Node[i].Node[j].Node {
+							id := []string{data.Node[i].Number, data.Node[i].Node[j].Number, data.Node[i].Node[j].Node[k].Number}
+							identifier := strings.Join(id, ".")
+							identifier = strings.Join([]string{urn, identifier}, ":")
+							text := data.Node[i].Node[j].Node[k].InnerXML
+							text = stringcleaning(text)
+
+							words := greekWordRegExp.FindAllString(text, -1)
+							latinword := latinWordRegExp.FindAllString(text, -1)
+							arabicword := arabicWordRegExp.FindAllString(text, -1)
+							greekwords = greekwords + len(words)
+							wordcount := strconv.Itoa(len(words))
+							latinwords = latinwords + len(latinword)
+							arabicwords = arabicwords + len(arabicword)
+							latinwordcount := strconv.Itoa(len(latinword))
+							arabicwordcount := strconv.Itoa(len(arabicword))
+							latinwordcounts = append(latinwordcounts, latinwordcount)
+							arabicwordcounts = append(arabicwordcounts, arabicwordcount)
+							identifiers = append(identifiers, identifier)
+							texts = append(texts, text)
+							greekwordcounts = append(greekwordcounts, wordcount)
+						}
 					}
 				}
 			default:
@@ -1262,6 +1412,10 @@ func main() {
 	fmt.Println(greekwords, "words written in the Greek alphabet.")
 	fmt.Println(latinwords, "words written in the Latin alphabet.")
 	fmt.Println(arabicwords, "words written in the Arabic alphabet.")
+	fmt.Println("The following schemes were used:")
+	for i, v := range scheme {
+		fmt.Println(i, v)
+	}
 }
 
 func writeCEX(outputFile string, ctscatalog CTSCatalog, identifiers, texts []string) {
