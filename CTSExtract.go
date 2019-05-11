@@ -1588,7 +1588,6 @@ func writeCSV(outputFile string, identifiers, texts, greekwordcounts, latinwordc
 		f.WriteString("#")
 		f.WriteString(arabicwordcounts[i])
 		f.WriteString("#")
-		fmt.Println(identifiers[i])
 		baseurn := strings.Split(identifiers[i], ":")[3]
 		urnslice := strings.Split(baseurn, ".")
 		workgroup := urnslice[0]
