@@ -316,12 +316,12 @@ func main() {
 	outputFile := ""
 	switch len(os.Args) {
 	case 1:
-		fmt.Println("Usage: CTSExtract [output-filename] [optionally: -CSV|JSON|XML]")
+		fmt.Println("Usage: CTSExtract [output-filename] [optionally: -CSV|JSON|XML|HTML]")
 		os.Exit(3)
 	case 2, 3:
 		outputFile = os.Args[1]
 	default:
-		fmt.Println("Usage: CTSExtract [output-filename] [optionally: -CSV|JSON]|XML")
+		fmt.Println("Usage: CTSExtract [output-filename] [optionally: -CSV|JSON|XML|HTML]")
 		os.Exit(3)
 	}
 	basereg := regexp.MustCompile(`urn:\p{L}+:\p{L}+:`)
@@ -1404,6 +1404,10 @@ func main() {
 			fmt.Println("Writing SQLite DB")
 			writeSQL(outputFile, ctscatalog)
 		}
+		if os.Args[2] == "-HTML" {
+			fmt.Println("Writing HTML Report")
+			writeHTML(outputFile, ctscatalog, identifiers, texts, greekwordcounts, latinwordcounts, arabicwordcounts, greekwords, latinwords, arabicwords)
+		}
 	default:
 		fmt.Println("Invalid number of arguments")
 	}
@@ -1415,6 +1419,76 @@ func main() {
 	fmt.Println("The following schemes were used:")
 	for i, v := range scheme {
 		fmt.Println(i, v)
+	}
+}
+
+func writeHTML(outputFile string, ctscatalog CTSCatalog, identifiers, texts, greekwordcounts, latinwordcounts, arabicwordcounts []string, greekwords, latinwords, arabicwords int) {
+	f, err := os.Create(outputFile)
+	check(err)
+	defer f.Close()
+	// HTML Header
+	// HTML BODY
+	f.WriteString("<div>\n")
+	f.WriteString("<p>")
+	f.WriteString("Greek words:" + strconv.Itoa(greekwords))
+	f.WriteString("</p>\n")
+	f.WriteString("<p>")
+	f.WriteString("Latin words:" + strconv.Itoa(latinwords))
+	f.WriteString("</p>\n")
+	f.WriteString("<p>")
+	f.WriteString("Arabic words:" + strconv.Itoa(arabicwords))
+	f.WriteString("</p>\n")
+	f.WriteString("</div>\n")
+	f.WriteString("</hr>\n")
+	for i := range ctscatalog.URN {
+		f.WriteString("<div>\n")
+		f.WriteString("<h3>")
+		f.WriteString("URN:" + ctscatalog.URN[i])
+		f.WriteString("</h3>\n")
+		f.WriteString("<p>")
+		f.WriteString("CitationScheme:" + ctscatalog.CitationScheme[i])
+		f.WriteString("</p>\n")
+		f.WriteString("<p>")
+		f.WriteString("GroupName:" + ctscatalog.GroupName[i])
+		f.WriteString("</p>\n")
+		f.WriteString("<p>")
+		f.WriteString("WorkTitle:" + ctscatalog.WorkTitle[i])
+		f.WriteString("</p>\n")
+		f.WriteString("<p>")
+		f.WriteString("VersionLabel:" + ctscatalog.VersionLabel[i])
+		f.WriteString("</p>\n")
+		f.WriteString("<p>")
+		f.WriteString("ExemplarLabel:" + ctscatalog.ExemplarLabel[i])
+		f.WriteString("</p>\n")
+		f.WriteString("<p>")
+		f.WriteString("Language:" + ctscatalog.Language[i])
+		f.WriteString("</p>\n")
+		found := false
+		wordcount := 0
+		for j, v := range identifiers {
+			if !found {
+				if strings.Contains(v, ctscatalog.URN[i]) {
+					f.WriteString("<p>")
+					f.WriteString("First URN:" + v)
+					f.WriteString("</p>\n")
+					f.WriteString("<p>")
+					f.WriteString("<a href=\"https://scaife.perseus.org/reader/" + v + "\">Read Online</a>")
+					f.WriteString("</p>\n")
+					found = true
+				}
+			}
+			if strings.Contains(v, ctscatalog.URN[i]) {
+				greek, _ := strconv.Atoi(greekwordcounts[j])
+				latin, _ := strconv.Atoi(latinwordcounts[j])
+				arabic, _ := strconv.Atoi(arabicwordcounts[j])
+				wordcount = wordcount + greek + latin + arabic
+			}
+		}
+		f.WriteString("<p>")
+		f.WriteString("Words:" + strconv.Itoa(wordcount))
+		f.WriteString("</p>\n")
+		f.WriteString("</div>\n")
+		f.WriteString("</hr>\n")
 	}
 }
 
