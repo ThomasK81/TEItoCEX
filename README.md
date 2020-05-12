@@ -56,3 +56,11 @@ CTSExtract can be used to extract metadta fields of TEI-XML annotated
 input. Currently export to CSV, JSON and XML (and SQL) is possible. 
 The XML format complies to OAI-DC format (DataCite). Please see
 OAI-PMH.md for information on OAI-PMH compliant hosting.
+
+# Producing First1kGreek JSON Catalog
+
+```
+./TEItoCEX catalog.json -Cat
+```
+The catalog can then replace the `catalog.json` in the gh-pages branch of the [First1KGreek](http://opengreekandlatin.github.io/First1KGreek/) repo.
+
