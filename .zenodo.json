@@ -1,6 +1,6 @@
 {
     "description": "TEItoCEX turns First1KGreek CTS TEI corpora into CEX collection, JSON, SQL, or CSV files.", 
-    "license": "MIT License", 
+    "license": "MIT", 
     "title": "TEItoCEX", 
     "creators": [
         {
