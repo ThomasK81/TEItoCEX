@@ -1,0 +1,13 @@
+{
+    "description": "TEItoCEX turns First1KGreek CTS TEI corpora into CEX collection, JSON, SQL, or CSV files.", 
+    "license": "MIT License", 
+    "title": "TEItoCEX", 
+    "creators": [
+        {
+            "affiliation": "Open Greek And Latin Steering Committee", 
+            "orcid": "0000-0002-9425-5850", 
+            "name": "Thomas Koentges"
+        }
+    ], 
+    "access_right": "open"
+}
