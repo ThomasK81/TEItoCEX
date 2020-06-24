@@ -6,6 +6,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 	"path"
 	"path/filepath"
@@ -610,12 +611,14 @@ func main() {
 				scheme[tempscheme] = scheme[tempscheme] + 1
 				filecount = filecount + 1
 				var data QueryTEI1p
-				xml.Unmarshal(byteValue, &data)
+				err = xml.Unmarshal(byteValue, &data)
+				check(err)
 				for i := range data.Node {
 					r := strings.NewReader(data.Node[i].InnerXML)
 					decoder := xml.NewDecoder(r)
 					for {
-						t, _ := decoder.Token()
+						t, err := decoder.Token()
+						check(err)
 						if t == nil {
 							break
 						}
@@ -653,7 +656,8 @@ func main() {
 				scheme[tempscheme] = scheme[tempscheme] + 1
 				filecount = filecount + 1
 				var data QueryTEI1
-				xml.Unmarshal(byteValue, &data)
+				err = xml.Unmarshal(byteValue, &data)
+				check(err)
 				for i := range data.Node {
 					r := strings.NewReader(data.Node[i].InnerXML)
 					decoder := xml.NewDecoder(r)
@@ -696,7 +700,8 @@ func main() {
 				scheme[tempscheme] = scheme[tempscheme] + 1
 				filecount = filecount + 1
 				var data QueryTEI0
-				xml.Unmarshal(byteValue, &data)
+				err = xml.Unmarshal(byteValue, &data)
+				check(err)
 				for i := range data.Node {
 					r := strings.NewReader(data.Node[i].InnerXML)
 					decoder := xml.NewDecoder(r)
@@ -739,7 +744,8 @@ func main() {
 				scheme[tempscheme] = scheme[tempscheme] + 1
 				filecount = filecount + 1
 				var data QueryTEI2
-				xml.Unmarshal(byteValue, &data)
+				err = xml.Unmarshal(byteValue, &data)
+				check(err)
 				for i := range data.Node {
 					ID2 := data.Node[i].Number
 					r := strings.NewReader(data.Node[i].InnerXML)
@@ -785,7 +791,8 @@ func main() {
 				scheme[tempscheme] = scheme[tempscheme] + 1
 				filecount = filecount + 1
 				var data QueryTEI3
-				xml.Unmarshal(byteValue, &data)
+				err = xml.Unmarshal(byteValue, &data)
+				check(err)
 				for i := range data.Node {
 					ID2 := data.Node[i].Number
 					for j := range data.Node[i].Node {
@@ -793,7 +800,8 @@ func main() {
 						r := strings.NewReader(data.Node[i].Node[j].InnerXML)
 						decoder := xml.NewDecoder(r)
 						for {
-							t, _ := decoder.Token()
+							t, err := decoder.Token()
+							check(err)
 							if t == nil {
 								break
 							}
@@ -801,7 +809,8 @@ func main() {
 							case xml.StartElement:
 								if se.Name.Local == "div" {
 									var info QueryInfo
-									decoder.DecodeElement(&info, &se)
+									err = decoder.DecodeElement(&info, &se)
+									check(err)
 									id := []string{ID2, ID3, info.Number}
 									identifier := strings.Join(id, ".")
 									identifier = strings.Join([]string{urn, identifier}, ":")
@@ -833,7 +842,8 @@ func main() {
 				scheme[tempscheme] = scheme[tempscheme] + 1
 				filecount = filecount + 1
 				var data QueryTEI2
-				xml.Unmarshal(byteValue, &data)
+				err = xml.Unmarshal(byteValue, &data)
+				check(err)
 				for i := range data.Node {
 					ID2 := data.Node[i].Number
 					r := strings.NewReader(data.Node[i].InnerXML)
@@ -847,7 +857,8 @@ func main() {
 						case xml.StartElement:
 							if se.Name.Local == "l" {
 								var info QueryInfo
-								decoder.DecodeElement(&info, &se)
+								err = decoder.DecodeElement(&info, &se)
+								check(err)
 								id := []string{ID2, info.Number}
 								identifier := strings.Join(id, ".")
 								identifier = strings.Join([]string{urn, identifier}, ":")
@@ -878,7 +889,8 @@ func main() {
 				scheme[tempscheme] = scheme[tempscheme] + 1
 				filecount = filecount + 1
 				var data StartTEI3p
-				xml.Unmarshal(byteValue, &data)
+				err = xml.Unmarshal(byteValue, &data)
+				check(err)
 				for i := range data.Node {
 					for j := range data.Node[i].Node {
 						for k := range data.Node[i].Node[j].Node {
@@ -911,7 +923,8 @@ func main() {
 				scheme[tempscheme] = scheme[tempscheme] + 1
 				filecount = filecount + 1
 				var data StartTEI3cit
-				xml.Unmarshal(byteValue, &data)
+				err = xml.Unmarshal(byteValue, &data)
+				check(err)
 				for i := range data.Node {
 					for j := range data.Node[i].Node {
 						for k := range data.Node[i].Node[j].Node {
@@ -944,7 +957,8 @@ func main() {
 				scheme[tempscheme] = scheme[tempscheme] + 1
 				filecount = filecount + 1
 				var data StartTEI1Direct
-				xml.Unmarshal(byteValue, &data)
+				err = xml.Unmarshal(byteValue, &data)
+				check(err)
 				for _, node := range data.Node {
 					identifier := strings.Join([]string{urn, node.Number}, ":")
 					text := node.InnerXML
@@ -971,7 +985,8 @@ func main() {
 				scheme[tempscheme] = scheme[tempscheme] + 1
 				filecount = filecount + 1
 				var data StartTEI1Late
-				xml.Unmarshal(byteValue, &data)
+				err = xml.Unmarshal(byteValue, &data)
+				check(err)
 				for _, node := range data.Node {
 					identifier := strings.Join([]string{urn, node.Number}, ":")
 					text := node.InnerXML
@@ -998,7 +1013,8 @@ func main() {
 				scheme[tempscheme] = scheme[tempscheme] + 1
 				filecount = filecount + 1
 				var data StartTEI1pseg
-				xml.Unmarshal(byteValue, &data)
+				err = xml.Unmarshal(byteValue, &data)
+				check(err)
 				for _, node := range data.Node {
 					identifier := strings.Join([]string{urn, node.Number}, ":")
 					text := node.InnerXML
@@ -1025,7 +1041,8 @@ func main() {
 				scheme[tempscheme] = scheme[tempscheme] + 1
 				filecount = filecount + 1
 				var data StartTEI1p
-				xml.Unmarshal(byteValue, &data)
+				err = xml.Unmarshal(byteValue, &data)
+				check(err)
 				for _, node := range data.Node {
 					identifier := strings.Join([]string{urn, node.Number}, ":")
 					text := node.InnerXML
@@ -1052,7 +1069,8 @@ func main() {
 				scheme[tempscheme] = scheme[tempscheme] + 1
 				filecount = filecount + 1
 				var data StartTEI1
-				xml.Unmarshal(byteValue, &data)
+				err = xml.Unmarshal(byteValue, &data)
+				check(err)
 				for _, node := range data.Node {
 					identifier := strings.Join([]string{urn, node.Number}, ":")
 					text := node.InnerXML
@@ -1079,7 +1097,8 @@ func main() {
 				scheme[tempscheme] = scheme[tempscheme] + 1
 				filecount = filecount + 1
 				var data StartTEI2p
-				xml.Unmarshal(byteValue, &data)
+				err = xml.Unmarshal(byteValue, &data)
+				check(err)
 				for i := range data.Node {
 					for j := range data.Node[i].Node {
 						id := []string{data.Node[i].Number, data.Node[i].Node[j].Number}
@@ -1110,7 +1129,8 @@ func main() {
 				scheme[tempscheme] = scheme[tempscheme] + 1
 				filecount = filecount + 1
 				var data StartTEI2ab
-				xml.Unmarshal(byteValue, &data)
+				err = xml.Unmarshal(byteValue, &data)
+				check(err)
 				for i := range data.Node {
 					for j := range data.Node[i].Node {
 						id := []string{data.Node[i].Number, data.Node[i].Node[j].Number}
@@ -1141,7 +1161,8 @@ func main() {
 				scheme[tempscheme] = scheme[tempscheme] + 1
 				filecount = filecount + 1
 				var data StartTEI2lgl
-				xml.Unmarshal(byteValue, &data)
+				err = xml.Unmarshal(byteValue, &data)
+				check(err)
 				for i := range data.Node {
 					for j := range data.Node[i].Node {
 						id := []string{data.Node[i].Number, data.Node[i].Node[j].Number}
@@ -1172,7 +1193,8 @@ func main() {
 				scheme[tempscheme] = scheme[tempscheme] + 1
 				filecount = filecount + 1
 				var data StartTEI2
-				xml.Unmarshal(byteValue, &data)
+				err = xml.Unmarshal(byteValue, &data)
+				check(err)
 				for i := range data.Node {
 					for j := range data.Node[i].Node {
 						id := []string{data.Node[i].Number, data.Node[i].Node[j].Number}
@@ -1203,7 +1225,8 @@ func main() {
 				scheme[tempscheme] = scheme[tempscheme] + 1
 				filecount = filecount + 1
 				var data StartTEI3
-				xml.Unmarshal(byteValue, &data)
+				err = xml.Unmarshal(byteValue, &data)
+				check(err)
 				for i := range data.Node {
 					for j := range data.Node[i].Node {
 						for k := range data.Node[i].Node[j].Node {
@@ -1236,7 +1259,8 @@ func main() {
 				scheme[tempscheme] = scheme[tempscheme] + 1
 				filecount = filecount + 1
 				var data StartTEI1Poem
-				xml.Unmarshal(byteValue, &data)
+				err = xml.Unmarshal(byteValue, &data)
+				check(err)
 				for _, node := range data.Node {
 					identifier := strings.Join([]string{urn, node.Number}, ":")
 					text := node.InnerXML
@@ -1263,7 +1287,8 @@ func main() {
 				scheme[tempscheme] = scheme[tempscheme] + 1
 				filecount = filecount + 1
 				var data StartTEI2direct
-				xml.Unmarshal(byteValue, &data)
+				err = xml.Unmarshal(byteValue, &data)
+				check(err)
 				for i := range data.Node {
 					for j := range data.Node[i].Node {
 						id := []string{data.Node[i].Number, data.Node[i].Node[j].Number}
@@ -1294,7 +1319,8 @@ func main() {
 				scheme[tempscheme] = scheme[tempscheme] + 1
 				filecount = filecount + 1
 				var data StartTEI3DirectNumbered
-				xml.Unmarshal(byteValue, &data)
+				err = xml.Unmarshal(byteValue, &data)
+				check(err)
 				for i := range data.Node {
 					for j := range data.Node[i].Node {
 						for k := range data.Node[i].Node[j].Node {
@@ -1327,7 +1353,8 @@ func main() {
 				scheme[tempscheme] = scheme[tempscheme] + 1
 				filecount = filecount + 1
 				var data StartTEI3poem
-				xml.Unmarshal(byteValue, &data)
+				err = xml.Unmarshal(byteValue, &data)
+				check(err)
 				for i := range data.Node {
 					for j := range data.Node[i].Node {
 						for k := range data.Node[i].Node[j].Node {
@@ -1360,7 +1387,8 @@ func main() {
 				scheme[tempscheme] = scheme[tempscheme] + 1
 				filecount = filecount + 1
 				var data StartTEI2Poem
-				xml.Unmarshal(byteValue, &data)
+				err = xml.Unmarshal(byteValue, &data)
+				check(err)
 				for i := range data.Node {
 					for j := range data.Node[i].Node {
 						id := []string{data.Node[i].Number, data.Node[i].Node[j].Number}
@@ -1390,7 +1418,8 @@ func main() {
 				scheme[tempscheme] = scheme[tempscheme] + 1
 				filecount = filecount + 1
 				var data StartTEI4div
-				xml.Unmarshal(byteValue, &data)
+				err = xml.Unmarshal(byteValue, &data)
+				check(err)
 				for i := range data.Node {
 					for j := range data.Node[i].Node {
 						for k := range data.Node[i].Node[j].Node {
@@ -1425,7 +1454,8 @@ func main() {
 				scheme[tempscheme] = scheme[tempscheme] + 1
 				filecount = filecount + 1
 				var data StartTEI3divcit
-				xml.Unmarshal(byteValue, &data)
+				err = xml.Unmarshal(byteValue, &data)
+				check(err)
 				for i := range data.Node {
 					for j := range data.Node[i].Node {
 						for k := range data.Node[i].Node[j].Node {
@@ -1837,6 +1867,7 @@ func stringcleaning(text string) string {
 
 func check(e error) {
 	if e != nil {
+		log.Println("Error:", e.Error())
 		panic(e)
 	}
 }
