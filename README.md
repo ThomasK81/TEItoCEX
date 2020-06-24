@@ -1,4 +1,5 @@
-[![Go Report Card](https://goreportcard.com/badge/github.com/ThomasK81/TEItoCEX)](https://goreportcard.com/report/github.com/ThomasK81/TEItoCEX)
+![Lint Go Code](https://github.com/ThomasK81/TEItoCEX/workflows/Lint%20Go%20Code/badge.svg)
+![Go Report Card](https://goreportcard.com/badge/github.com/ThomasK81/TEItoCEX)](https://goreportcard.com/report/github.com/ThomasK81/TEItoCEX)
 
 # TEItoCEX
 Turn CTS TEI corpora like CHS and OGL's [First1KGreek](http://opengreekandlatin.github.io/First1KGreek/) into [CEX collection files](https://github.com/cite-architecture/citedx/blob/master/docs/CEX-spec-3.0.md). 
