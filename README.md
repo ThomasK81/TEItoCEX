@@ -7,13 +7,14 @@ Turn CTS TEI corpora like CHS and OGL's [First1KGreek](http://opengreekandlatin.
 
 # USAGE OSX
 
-1. Copy `CTSExtract` into the unpacked data folder of e.g. First1Greek. 
-2. Open a terminal in that folder and type: `./CTSExtract 1kGreek.cex ` (you might have to chmod +x the executable before you can use it)
-3. Enjoy your new CEX collection file!
+1. Download the latest release and unpack the `binaries.zip`.
+2. Copy the binary for your system into the unpacked data folder of e.g. First1Greek. 
+3. Open a terminal in that folder and type: `./CTSExtract 1kGreek.cex ` (you might have to chmod +x the executable before you can use it)
+4. Enjoy your new CEX collection file!
 
 ## Alternatively convert to CSV (or JSON, a flat XML, or SQL) 
 
-1. Copy `CTSExtract` into the unpacked data folder of e.g. First1Greek. 
+1. Copy the binary for your system into the unpacked data folder of e.g. First1Greek. 
 2. Open a terminal in that folder and type: `./CTSExtract 1kGreek.csv -CSV `
 3. Enjoy your new CSV collection file!
 
