@@ -435,7 +435,8 @@ func main() {
 			basestr = match[0]
 		}
 		var xpathinfo RefPattern
-		xml.Unmarshal(byteValue, &xpathinfo)
+		err = xml.Unmarshal(byteValue, &xpathinfo)
+		check(err)
 		if len(xpathinfo.RefPattern) == 0 {
 			noxpath = append(noxpath, path.Base(file))
 		}
@@ -485,7 +486,8 @@ func main() {
 				scheme[tempscheme] = scheme[tempscheme] + 1
 				filecount = filecount + 1
 				var data StartTEI4p
-				xml.Unmarshal(byteValue, &data)
+				err = xml.Unmarshal(byteValue, &data)
+				check(err)
 				for i := range data.Node {
 					for j := range data.Node[i].Node {
 						for k := range data.Node[i].Node[j].Node {
@@ -533,7 +535,8 @@ func main() {
 						case xml.StartElement:
 							if se.Name.Local == "div" {
 								var info QueryInfo
-								decoder.DecodeElement(&info, &se)
+								err = decoder.DecodeElement(&info, &se)
+								check(err)
 								identifier := strings.Join([]string{urn, info.Number}, ":")
 								text := info.InnerXML
 								text = stringcleaning(text)
@@ -575,7 +578,8 @@ func main() {
 						case xml.StartElement:
 							if se.Name.Local == "div" {
 								var info QueryInfo
-								decoder.DecodeElement(&info, &se)
+								err = decoder.DecodeElement(&info, &se)
+								check(err)
 								identifier := strings.Join([]string{urn, info.Number}, ":")
 								text := info.InnerXML
 								text = stringcleaning(text)
@@ -617,7 +621,8 @@ func main() {
 						case xml.StartElement:
 							if se.Name.Local == "l" {
 								var info QueryInfo
-								decoder.DecodeElement(&info, &se)
+								err = decoder.DecodeElement(&info, &se)
+								check(err)
 								identifier := strings.Join([]string{urn, info.Number}, ":")
 								text := info.InnerXML
 								text = stringcleaning(text)
@@ -1544,61 +1549,72 @@ func writeCatalog(outputFile string, report ReportJSON) {
 	f, err2 := os.Create(outputFile)
 	check(err2)
 	defer f.Close()
-	f.WriteString(string(jsonreport))
+	_, err := f.WriteString(string(jsonreport))
+	check(err)
+}
+
+type fileConnection struct {
+	*os.File
+}
+
+func (f fileConnection) writeToFile(input string) {
+	_, err := f.WriteString(input)
+	check(err)
 }
 
 func writeHTML(outputFile string, ctscatalog CTSCatalog, identifiers, texts, greekwordcounts, latinwordcounts, arabicwordcounts []string, greekwords, latinwords, arabicwords int) {
 	f, err := os.Create(outputFile)
 	check(err)
 	defer f.Close()
+	fconnection := fileConnection{f}
 	// HTML Header
 	// HTML BODY
-	f.WriteString("<div>\n")
-	f.WriteString("<p>")
-	f.WriteString("Greek words:" + strconv.Itoa(greekwords))
-	f.WriteString("</p>\n")
-	f.WriteString("<p>")
-	f.WriteString("Latin words:" + strconv.Itoa(latinwords))
-	f.WriteString("</p>\n")
-	f.WriteString("<p>")
-	f.WriteString("Arabic words:" + strconv.Itoa(arabicwords))
-	f.WriteString("</p>\n")
-	f.WriteString("</div>\n")
-	f.WriteString("</hr>\n")
+	fconnection.writeToFile("<div>\n")
+	fconnection.writeToFile("<p>")
+	fconnection.writeToFile("Greek words:" + strconv.Itoa(greekwords))
+	fconnection.writeToFile("</p>\n")
+	fconnection.writeToFile("<p>")
+	fconnection.writeToFile("Latin words:" + strconv.Itoa(latinwords))
+	fconnection.writeToFile("</p>\n")
+	fconnection.writeToFile("<p>")
+	fconnection.writeToFile("Arabic words:" + strconv.Itoa(arabicwords))
+	fconnection.writeToFile("</p>\n")
+	fconnection.writeToFile("</div>\n")
+	fconnection.writeToFile("</hr>\n")
 	for i := range ctscatalog.URN {
-		f.WriteString("<div>\n")
-		f.WriteString("<h3>")
-		f.WriteString("URN:" + ctscatalog.URN[i])
-		f.WriteString("</h3>\n")
-		f.WriteString("<p>")
-		f.WriteString("CitationScheme:" + ctscatalog.CitationScheme[i])
-		f.WriteString("</p>\n")
-		f.WriteString("<p>")
-		f.WriteString("GroupName:" + ctscatalog.GroupName[i])
-		f.WriteString("</p>\n")
-		f.WriteString("<p>")
-		f.WriteString("WorkTitle:" + ctscatalog.WorkTitle[i])
-		f.WriteString("</p>\n")
-		f.WriteString("<p>")
-		f.WriteString("VersionLabel:" + ctscatalog.VersionLabel[i])
-		f.WriteString("</p>\n")
-		f.WriteString("<p>")
-		f.WriteString("ExemplarLabel:" + ctscatalog.ExemplarLabel[i])
-		f.WriteString("</p>\n")
-		f.WriteString("<p>")
-		f.WriteString("Language:" + ctscatalog.Language[i])
-		f.WriteString("</p>\n")
+		fconnection.writeToFile("<div>\n")
+		fconnection.writeToFile("<h3>")
+		fconnection.writeToFile("URN:" + ctscatalog.URN[i])
+		fconnection.writeToFile("</h3>\n")
+		fconnection.writeToFile("<p>")
+		fconnection.writeToFile("CitationScheme:" + ctscatalog.CitationScheme[i])
+		fconnection.writeToFile("</p>\n")
+		fconnection.writeToFile("<p>")
+		fconnection.writeToFile("GroupName:" + ctscatalog.GroupName[i])
+		fconnection.writeToFile("</p>\n")
+		fconnection.writeToFile("<p>")
+		fconnection.writeToFile("WorkTitle:" + ctscatalog.WorkTitle[i])
+		fconnection.writeToFile("</p>\n")
+		fconnection.writeToFile("<p>")
+		fconnection.writeToFile("VersionLabel:" + ctscatalog.VersionLabel[i])
+		fconnection.writeToFile("</p>\n")
+		fconnection.writeToFile("<p>")
+		fconnection.writeToFile("ExemplarLabel:" + ctscatalog.ExemplarLabel[i])
+		fconnection.writeToFile("</p>\n")
+		fconnection.writeToFile("<p>")
+		fconnection.writeToFile("Language:" + ctscatalog.Language[i])
+		fconnection.writeToFile("</p>\n")
 		found := false
 		wordcount := 0
 		for j, v := range identifiers {
 			if !found {
 				if strings.Contains(v, ctscatalog.URN[i]) {
-					f.WriteString("<p>")
-					f.WriteString("First URN:" + v)
-					f.WriteString("</p>\n")
-					f.WriteString("<p>")
-					f.WriteString("<a href=\"https://scaife.perseus.org/reader/" + v + "\">Read Online</a>")
-					f.WriteString("</p>\n")
+					fconnection.writeToFile("<p>")
+					fconnection.writeToFile("First URN:" + v)
+					fconnection.writeToFile("</p>\n")
+					fconnection.writeToFile("<p>")
+					fconnection.writeToFile("<a href=\"https://scaife.perseus.org/reader/" + v + "\">Read Online</a>")
+					fconnection.writeToFile("</p>\n")
 					found = true
 				}
 			}
@@ -1609,11 +1625,11 @@ func writeHTML(outputFile string, ctscatalog CTSCatalog, identifiers, texts, gre
 				wordcount = wordcount + greek + latin + arabic
 			}
 		}
-		f.WriteString("<p>")
-		f.WriteString("Words:" + strconv.Itoa(wordcount))
-		f.WriteString("</p>\n")
-		f.WriteString("</div>\n")
-		f.WriteString("</hr>\n")
+		fconnection.writeToFile("<p>")
+		fconnection.writeToFile("Words:" + strconv.Itoa(wordcount))
+		fconnection.writeToFile("</p>\n")
+		fconnection.writeToFile("</div>\n")
+		fconnection.writeToFile("</hr>\n")
 	}
 }
 
