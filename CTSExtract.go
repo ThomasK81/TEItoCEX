@@ -17,6 +17,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
+// ReportJSON is a struct for exporting to JSON
 type ReportJSON struct {
 	Nodecount   int           `json:"nodeCount"`
 	Greekwords  int           `json:"greekWords"`
@@ -25,6 +26,7 @@ type ReportJSON struct {
 	Catalog     []JSONCatalog `json:"catalog"`
 }
 
+// JSONCatalog is a struct for exporting to JSON. It is a sub-struct to ReportJSON.
 type JSONCatalog struct {
 	URN       string `json:"urn"`
 	GroupName string `json:"group_name"`
@@ -34,6 +36,7 @@ type JSONCatalog struct {
 	Scaife    string `json:"scaife"`
 }
 
+//CTSCatalog is the main container for CTS catalog data in the format expected by CEX, but in a way that it can integrated into a number of ways.
 type CTSCatalog struct {
 	URN            []string `json:"urn"`
 	CitationScheme []string `json:"citation_scheme"`
@@ -45,6 +48,7 @@ type CTSCatalog struct {
 	Language       []string `json:"language"`
 }
 
+//ExportDocument is the old JSON implementation. Preserved for legacy.
 type ExportDocument struct {
 	URN            string `json:"urn"`
 	CitationScheme string `json:"citation_scheme"`
@@ -56,14 +60,15 @@ type ExportDocument struct {
 	Language       string `json:"language"`
 }
 
-type OAI_DC_Record struct {
+//OAIDCRecord is a container to produce DataCite metadata.
+type OAIDCRecord struct {
 	//XMLName  xml.Name `xml:"http://www.openarchives.org/OAI/2.0/oai_dc/ oai_dc:dc"`
 	XMLName     xml.Name  `xml:"oai_dc:dc"`
 	Xmlns1      string    `xml:"xmlns:oai_dc,attr"`
 	Xmlns2      string    `xml:"xmlns:dc,attr"`
 	Xmlns3      string    `xml:"xmlns:xsi,attr"`
 	Xmlns4      string    `xml:"xsi:schemaLocation,attr"`
-	Id          int       `xml:"id,attr"`
+	ID          int       `xml:"id,attr"`
 	Title       string    `xml:"dc:title"`
 	Creator     string    `xml:"dc:creator"`
 	Subject     string    `xml:"dc:subject"`
@@ -75,20 +80,24 @@ type OAI_DC_Record struct {
 	Publisher string `xml:"dc:publisher"`
 }
 
+//Metadata container for Xpath metadata
 type Metadata struct {
 	Xpath string
 	Kind  string
 }
 
+//XPathInfo container for Xpath metadata
 type XPathInfo struct {
 	XPathInfo string `xml:"replacementPattern,attr"`
 	XPathWhat string `xml:"n,attr"`
 }
 
+//LangInfo container for language metadata
 type LangInfo struct {
 	Language string `xml:"ident,attr"`
 }
 
+//RefPattern container for refpattern
 type RefPattern struct {
 	RefPattern []XPathInfo `xml:"teiHeader>encodingDesc>refsDecl>cRefPattern"`
 	Title      []string    `xml:"teiHeader>fileDesc>titleStmt>title"`
@@ -100,228 +109,280 @@ type teiHeader struct {
 	RefPattern []XPathInfo `xml:"teiHeader>encodingDesc>refsDecl>cRefPattern"`
 }
 
+//SmallestNode container for smallest CTS node
 type SmallestNode struct {
 	InnerXML string `xml:",innerxml"`
 	Number   string `xml:"n,attr"`
 }
 
+//StartTEI1Direct is one of many parsing containers.
 type StartTEI1Direct struct {
 	Node []SmallestNode `xml:"text>body>div"`
 }
 
+//StartTEI1p is one of many parsing containers.
 type StartTEI1p struct {
 	Node []SmallestNode `xml:"text>body>div>p"`
 }
 
+//StartTEI1pseg is one of many parsing containers.
 type StartTEI1pseg struct {
 	Node []SmallestNode `xml:"text>body>div>p>seg"`
 }
 
+//StartTEI1 is one of many parsing containers.
 type StartTEI1 struct {
 	Node []SmallestNode `xml:"text>body>div>div"`
 }
 
+//StartTEI1Late is one of many parsing containers.
 type StartTEI1Late struct {
 	Node []SmallestNode `xml:"text>body>div>div>div"`
 }
 
+//TEI3n2 is one of many parsing containers.
 type TEI3n2 struct {
 	Node   []SmallestNode `xml:"div"`
 	Number string         `xml:"n,attr"`
 }
 
+//TEI3n3 is one of many parsing containers.
 type TEI3n3 struct {
 	Node   []TEI3n2 `xml:"div"`
 	Number string   `xml:"n,attr"`
 }
 
+//StartTEI3 is one of many parsing containers.
 type StartTEI3 struct {
 	Node []TEI3n3 `xml:"text>body>div>div"`
 }
 
+//TEI3n2p is one of many parsing containers.
 type TEI3n2p struct {
 	Node   []SmallestNode `xml:"p"`
 	Number string         `xml:"n,attr"`
 }
 
+//TEI3n3p is one of many parsing containers.
 type TEI3n3p struct {
 	Node   []TEI3n2p `xml:"div"`
 	Number string    `xml:"n,attr"`
 }
 
+//StartTEI3p is one of many parsing containers.
 type StartTEI3p struct {
 	Node []TEI3n3p `xml:"text>body>div>div"`
 }
 
+//TEI4n2p is one of many parsing containers.
 type TEI4n2p struct {
 	Node   []SmallestNode `xml:"p"`
 	Number string         `xml:"n,attr"`
 }
 
+//TEI4n3p is one of many parsing containers.
 type TEI4n3p struct {
 	Node   []TEI4n2p `xml:"div"`
 	Number string    `xml:"n,attr"`
 }
 
+//TEI4n4p is one of many parsing containers.
 type TEI4n4p struct {
 	Node   []TEI4n3p `xml:"div"`
 	Number string    `xml:"n,attr"`
 }
 
+//StartTEI4p is one of many parsing containers.
 type StartTEI4p struct {
 	Node []TEI4n4p `xml:"text>body>div>div"`
 }
 
+//TEI4n2div is one of many parsing containers.
 type TEI4n2div struct {
 	Node   []SmallestNode `xml:"div"`
 	Number string         `xml:"n,attr"`
 }
 
+//TEI4n3div is one of many parsing containers.
 type TEI4n3div struct {
 	Node   []TEI4n2div `xml:"div"`
 	Number string      `xml:"n,attr"`
 }
 
+//TEI4n4div is one of many parsing containers.
 type TEI4n4div struct {
 	Node   []TEI4n3div `xml:"div"`
 	Number string      `xml:"n,attr"`
 }
 
+//StartTEI4div is one of many parsing containers.
 type StartTEI4div struct {
 	Node []TEI4n4div `xml:"text>body>div>div"`
 }
 
+//StartTEI2p is one of many parsing containers.
 type StartTEI2p struct {
 	Node []TEI3n2p `xml:"text>body>div>div"`
 }
 
+//TEI2n2ab is one of many parsing containers.
 type TEI2n2ab struct {
 	Node   []SmallestNode `xml:"ab"`
 	Number string         `xml:"n,attr"`
 }
 
+//StartTEI2ab is one of many parsing containers.
 type StartTEI2ab struct {
 	Node []TEI2n2ab `xml:"text>body>div>div"`
 }
 
+//TEI2n2lgl is one of many parsing containers.
 type TEI2n2lgl struct {
 	Node   []SmallestNode `xml:"lg>l"`
 	Number string         `xml:"n,attr"`
 }
 
+//StartTEI2lgl is one of many parsing containers.
 type StartTEI2lgl struct {
 	Node []TEI2n2lgl `xml:"text>body>div>div"`
 }
 
+//TEI3n2cit is one of many parsing containers.
 type TEI3n2cit struct {
 	Node   []SmallestNode `xml:"cit"`
 	Number string         `xml:"n,attr"`
 }
 
+//TEI3n3cit is one of many parsing containers.
 type TEI3n3cit struct {
 	Node   []TEI3n2cit `xml:"p"`
 	Number string      `xml:"n,attr"`
 }
 
+//StartTEI3cit is one of many parsing containers.
 type StartTEI3cit struct {
 	Node []TEI3n3cit `xml:"text>body>div>div"`
 }
 
+//TEI3n3divcit is one of many parsing containers.
 type TEI3n3divcit struct {
 	Node   []TEI3n2cit `xml:"div"`
 	Number string      `xml:"n,attr"`
 }
 
+//StartTEI3divcit is one of many parsing containers.
 type StartTEI3divcit struct {
 	Node []TEI3n3divcit `xml:"text>body>div>div"`
 }
 
+//StartTEI2 is one of many parsing containers.
 type StartTEI2 struct {
 	Node []TEI3n2 `xml:"text>body>div>div"`
 }
 
+//StartTEI2direct is one of many parsing containers.
 type StartTEI2direct struct {
 	Node []TEI3n2 `xml:"text>body>div"`
 }
 
+//StartTEI1Poem is one of many parsing containers.
 type StartTEI1Poem struct {
 	Node []SmallestNode `xml:"text>body>div>l"`
 }
 
+//TEI2Poemn2 is one of many parsing containers.
 type TEI2Poemn2 struct {
 	Node   []SmallestNode `xml:"l"`
 	Number string         `xml:"n,attr"`
 }
+
+//StartTEI2Poem is one of many parsing containers.
 type StartTEI2Poem struct {
 	Node []TEI2Poemn2 `xml:"text>body>div>div"`
 }
 
+//TEI3n2DirectNumbered is one of many parsing containers.
 type TEI3n2DirectNumbered struct {
 	Node   []SmallestNode `xml:"div3"`
 	Number string         `xml:"n,attr"`
 }
 
+//TEI3n3DirectNumbered is one of many parsing containers.
 type TEI3n3DirectNumbered struct {
 	Node   []TEI3n2DirectNumbered `xml:"div2"`
 	Number string                 `xml:"n,attr"`
 }
 
+//StartTEI3DirectNumbered is one of many parsing containers.
 type StartTEI3DirectNumbered struct {
 	Node []TEI3n3DirectNumbered `xml:"text>body>div1"`
 }
 
+//TEI3n2poem is one of many parsing containers.
 type TEI3n2poem struct {
 	Node   []SmallestNode `xml:"l"`
 	Number string         `xml:"n,attr"`
 }
 
+//TEI3n3poem is one of many parsing containers.
 type TEI3n3poem struct {
 	Node   []TEI3n2poem `xml:"div"`
 	Number string       `xml:"n,attr"`
 }
 
+//StartTEI3poem is one of many parsing containers.
 type StartTEI3poem struct {
 	Node []TEI3n3poem `xml:"text>body>div>div"`
 }
 
+//QSmallestNode is one of many parsing containers.
 type QSmallestNode struct {
 	InnerXML string `xml:",innerxml"`
 	Number   string `xml:"n,attr"`
 }
 
+//QueryTEI2 is one of many parsing containers.
 type QueryTEI2 struct {
 	Node []QSmallestNode `xml:"text>body>div>div"`
 }
 
+//QueryTEI3n3 is one of many parsing containers.
 type QueryTEI3n3 struct {
 	Node   []QSmallestNode `xml:"div"`
 	Number string          `xml:"n,attr"`
 }
 
+//QueryTEI3 is one of many parsing containers.
 type QueryTEI3 struct {
 	Node []QueryTEI3n3 `xml:"text>body>div>div"`
 }
 
+//QueryTEI1 is one of many parsing containers.
 type QueryTEI1 struct {
 	Node []QSmallestNode `xml:"text>body>div"`
 }
 
+//QueryTEI1p is one of many parsing containers.
 type QueryTEI1p struct {
 	Node []QSmallestNode `xml:"text>body>div>p"`
 }
 
+//QSmallestNodeDiv is one of many parsing containers.
 type QSmallestNodeDiv struct {
 	InnerXML string `xml:",innerxml"`
 }
 
+//QueryTEI1div is one of many parsing containers.
 type QueryTEI1div struct {
 	Node []QSmallestNodeDiv `xml:"text>body>div>div"`
 }
 
+//QueryTEI0 is one of many parsing containers.
 type QueryTEI0 struct {
 	Node []QSmallestNode `xml:"text>body"`
 }
 
+//QueryInfo is one of many parsing containers.
 type QueryInfo struct {
 	InnerXML string `xml:",innerxml"`
 	Number   string `xml:"n,attr"`
@@ -1606,9 +1667,9 @@ func writeCEX(outputFile string, ctscatalog CTSCatalog, identifiers, texts []str
 	}
 }
 
-func getRecord(ctscatalog CTSCatalog, i int) OAI_DC_Record {
-	var record OAI_DC_Record
-	record = OAI_DC_Record{
+func getRecord(ctscatalog CTSCatalog, i int) OAIDCRecord {
+	var record OAIDCRecord
+	record = OAIDCRecord{
 		Xmlns1:   "http://www.openarchives.org/OAI/2.0/oai_dc/",
 		Xmlns2:   "http://purl.org/dc/elements/1.1/",
 		Xmlns3:   "http://www.w3.org/2001/XMLSchema-instance",
@@ -1628,7 +1689,7 @@ func getRecord(ctscatalog CTSCatalog, i int) OAI_DC_Record {
 
 func writeSQL(outputFile string, ctscatalog CTSCatalog) {
 
-	var record OAI_DC_Record
+	var record OAIDCRecord
 	db, err := sql.Open("sqlite3", outputFile)
 	check(err)
 	records, _ := db.Prepare("INSERT INTO records(id, item_id, metadata_format_id, xml, state) values(? ,?, 1, ?, 1)")
@@ -1729,7 +1790,7 @@ func writeCSV(outputFile string, identifiers, texts, greekwordcounts, latinwordc
 		baseurn := strings.Split(identifiers[i], ":")[3]
 		urnslice := strings.Split(baseurn, ".")
 		workgroup := urnslice[0]
-		work := strings.Join(urnslice[1:len(urnslice)], ".")
+		work := strings.Join(urnslice[1:], ".")
 		f.WriteString(workgroup)
 		f.WriteString("#")
 		f.WriteString(work)
