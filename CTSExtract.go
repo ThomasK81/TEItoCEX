@@ -105,9 +105,9 @@ type RefPattern struct {
 	Languages  []LangInfo  `xml:"teiHeader>profileDesc>langUsage>language"`
 }
 
-type teiHeader struct {
-	RefPattern []XPathInfo `xml:"teiHeader>encodingDesc>refsDecl>cRefPattern"`
-}
+// type teiHeader struct {
+// 	RefPattern []XPathInfo `xml:"teiHeader>encodingDesc>refsDecl>cRefPattern"`
+// }
 
 //SmallestNode container for smallest CTS node
 type SmallestNode struct {
@@ -1667,8 +1667,7 @@ func writeCEX(outputFile string, ctscatalog CTSCatalog, identifiers, texts []str
 	}
 }
 
-func getRecord(ctscatalog CTSCatalog, i int) OAIDCRecord {
-	var record OAIDCRecord
+func getRecord(ctscatalog CTSCatalog, i int) (record OAIDCRecord) {
 	record = OAIDCRecord{
 		Xmlns1:   "http://www.openarchives.org/OAI/2.0/oai_dc/",
 		Xmlns2:   "http://purl.org/dc/elements/1.1/",
