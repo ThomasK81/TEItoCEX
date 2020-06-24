@@ -522,7 +522,8 @@ func main() {
 				scheme[tempscheme] = scheme[tempscheme] + 1
 				filecount = filecount + 1
 				var data QueryTEI1
-				xml.Unmarshal(byteValue, &data)
+				err = xml.Unmarshal(byteValue, &data)
+				check(err)
 				for i := range data.Node {
 					r := strings.NewReader(data.Node[i].InnerXML)
 					decoder := xml.NewDecoder(r)
@@ -565,7 +566,8 @@ func main() {
 				scheme[tempscheme] = scheme[tempscheme] + 1
 				filecount = filecount + 1
 				var data QueryTEI1div
-				xml.Unmarshal(byteValue, &data)
+				err = xml.Unmarshal(byteValue, &data)
+				check(err)
 				for i := range data.Node {
 					r := strings.NewReader(data.Node[i].InnerXML)
 					decoder := xml.NewDecoder(r)
@@ -664,7 +666,8 @@ func main() {
 						case xml.StartElement:
 							if se.Name.Local == "l" {
 								var info QueryInfo
-								decoder.DecodeElement(&info, &se)
+								err = decoder.DecodeElement(&info, &se)
+								check(err)
 								identifier := strings.Join([]string{urn, info.Number}, ":")
 								text := info.InnerXML
 								text = stringcleaning(text)
@@ -706,7 +709,8 @@ func main() {
 						case xml.StartElement:
 							if se.Name.Local == "l" {
 								var info QueryInfo
-								decoder.DecodeElement(&info, &se)
+								err = decoder.DecodeElement(&info, &se)
+								check(err)
 								identifier := strings.Join([]string{urn, info.Number}, ":")
 								text := info.InnerXML
 								text = stringcleaning(text)
@@ -749,7 +753,8 @@ func main() {
 						case xml.StartElement:
 							if se.Name.Local == "div" {
 								var info QueryInfo
-								decoder.DecodeElement(&info, &se)
+								err = decoder.DecodeElement(&info, &se)
+								check(err)
 								id := []string{ID2, info.Number}
 								identifier := strings.Join(id, ".")
 								identifier = strings.Join([]string{urn, identifier}, ":")
@@ -1636,50 +1641,51 @@ func writeHTML(outputFile string, ctscatalog CTSCatalog, identifiers, texts, gre
 func writeCEX(outputFile string, ctscatalog CTSCatalog, identifiers, texts []string) {
 	f, err := os.Create(outputFile)
 	check(err)
+	fconnection := fileConnection{f}
 	defer f.Close()
 
 	// cexversion
-	f.WriteString("#!cexversion")
-	f.WriteString("\n\n")
-	f.WriteString("3.0")
-	f.WriteString("\n\n")
+	fconnection.writeToFile("#!cexversion")
+	fconnection.writeToFile("\n\n")
+	fconnection.writeToFile("3.0")
+	fconnection.writeToFile("\n\n")
 
 	// ctscatalog
-	f.WriteString("#!ctscatalog")
-	f.WriteString("\n\n")
-	f.WriteString("urn#citationScheme#groupName#workTitle#versionLabel#exemplarLabel#online#language")
-	f.WriteString("\n")
+	fconnection.writeToFile("#!ctscatalog")
+	fconnection.writeToFile("\n\n")
+	fconnection.writeToFile("urn#citationScheme#groupName#workTitle#versionLabel#exemplarLabel#online#language")
+	fconnection.writeToFile("\n")
 	for i := range ctscatalog.URN {
-		f.WriteString(ctscatalog.URN[i])
-		f.WriteString("#")
-		f.WriteString(ctscatalog.CitationScheme[i])
-		f.WriteString("#")
-		f.WriteString(ctscatalog.GroupName[i])
-		f.WriteString("#")
-		f.WriteString(ctscatalog.WorkTitle[i])
-		f.WriteString("#")
-		f.WriteString(ctscatalog.VersionLabel[i])
-		f.WriteString("#")
-		f.WriteString(ctscatalog.ExemplarLabel[i])
-		f.WriteString("#")
-		f.WriteString(ctscatalog.Online[i])
-		f.WriteString("#")
-		f.WriteString(ctscatalog.Language[i])
-		f.WriteString("\n")
+		fconnection.writeToFile(ctscatalog.URN[i])
+		fconnection.writeToFile("#")
+		fconnection.writeToFile(ctscatalog.CitationScheme[i])
+		fconnection.writeToFile("#")
+		fconnection.writeToFile(ctscatalog.GroupName[i])
+		fconnection.writeToFile("#")
+		fconnection.writeToFile(ctscatalog.WorkTitle[i])
+		fconnection.writeToFile("#")
+		fconnection.writeToFile(ctscatalog.VersionLabel[i])
+		fconnection.writeToFile("#")
+		fconnection.writeToFile(ctscatalog.ExemplarLabel[i])
+		fconnection.writeToFile("#")
+		fconnection.writeToFile(ctscatalog.Online[i])
+		fconnection.writeToFile("#")
+		fconnection.writeToFile(ctscatalog.Language[i])
+		fconnection.writeToFile("\n")
 	}
-	f.WriteString("\n")
+	fconnection.writeToFile("\n")
 
 	// ctsdata
-	f.WriteString("#!ctsdata")
-	f.WriteString("\n\n")
+	fconnection.writeToFile("#!ctsdata")
+	fconnection.writeToFile("\n\n")
 
 	for i := range identifiers {
 		newtext := strings.Replace(texts[i], "#", "", -1)
 		newtext = strings.Replace(newtext, `"`, `\"`, -1)
-		f.WriteString(identifiers[i])
-		f.WriteString("#")
-		f.WriteString(newtext)
-		f.WriteString("\n")
+		fconnection.writeToFile(identifiers[i])
+		fconnection.writeToFile("#")
+		fconnection.writeToFile(newtext)
+		fconnection.writeToFile("\n")
 	}
 }
 
@@ -1714,13 +1720,11 @@ func writeSQL(outputFile string, ctscatalog CTSCatalog) {
 		record = getRecord(ctscatalog, i)
 		if record.Creator != "" {
 			output, err := xml.MarshalIndent(record, "", " ")
-			if err != nil {
-				fmt.Printf("error: %v\n", err)
-			}
-			//os.Stdout.Write(output)
+			check(err)
 			fmt.Print(".")
-			records.Exec(i, i, output)
-			items.Exec(i, ctscatalog.URN[i])
+			_, err = records.Exec(i, i, output)
+			check(err)
+			_, err = items.Exec(i, ctscatalog.URN[i])
 			check(err)
 		}
 	}
@@ -1738,7 +1742,8 @@ func writeXML(outputFile string, ctscatalog CTSCatalog) {
 			fmt.Printf("error: %v\n", err)
 		}
 		//os.Stdout.Write(output)
-		f.Write(output)
+		_, err = f.Write(output)
+		check(err)
 	}
 }
 
@@ -1746,8 +1751,8 @@ func writeJSON(outputFile string, ctscatalog CTSCatalog) {
 	f, err := os.Create(outputFile)
 	check(err)
 	defer f.Close()
-
-	f.WriteString(string('['))
+	_, err = f.WriteString(string('['))
+	check(err)
 	for i := range ctscatalog.URN {
 		var d ExportDocument
 		d.URN = ctscatalog.URN[i]
@@ -1759,59 +1764,48 @@ func writeJSON(outputFile string, ctscatalog CTSCatalog) {
 		d.Online = ctscatalog.Online[i]
 		d.Language = ctscatalog.Language[i]
 		b, _ := json.Marshal(d)
-		f.WriteString(string(b))
+		_, err = f.WriteString(string(b))
+		check(err)
 		if i < len(ctscatalog.URN)-1 {
-			f.WriteString(string(','))
+			_, err = f.WriteString(string(','))
+			check(err)
 		}
 	}
-	f.WriteString(string(']'))
+	_, err = f.WriteString(string(']'))
+	check(err)
 }
 
 func writeCSV(outputFile string, identifiers, texts, greekwordcounts, latinwordcounts, arabicwordcounts []string) {
 	f, err := os.Create(outputFile)
 	check(err)
 	defer f.Close()
+	fconnection := fileConnection{f}
 
-	f.WriteString("identifier")
-	f.WriteString("#")
-	f.WriteString("text")
-	f.WriteString("#")
-	f.WriteString("GreekWords")
-	f.WriteString("#")
-	f.WriteString("LatinWords")
-	f.WriteString("#")
-	f.WriteString("ArabicWords")
-	f.WriteString("#")
-	f.WriteString("Workgroup")
-	f.WriteString("#")
-	f.WriteString("Work")
-	f.WriteString("#")
-	f.WriteString("WorkVerbose")
-	f.WriteString("\n")
+	fconnection.writeToFile("identifier#text#GreekWords#LatinWords#ArabicWords#Workgroup#Work#WorkVerbose\n")
 
 	for i := range identifiers {
 		newtext := strings.Replace(texts[i], "#", "", -1)
 		newtext = strings.Replace(newtext, `"`, `\"`, -1)
-		f.WriteString(identifiers[i])
-		f.WriteString("#")
-		f.WriteString(newtext)
-		f.WriteString("#")
-		f.WriteString(greekwordcounts[i])
-		f.WriteString("#")
-		f.WriteString(latinwordcounts[i])
-		f.WriteString("#")
-		f.WriteString(arabicwordcounts[i])
-		f.WriteString("#")
+		fconnection.writeToFile(identifiers[i])
+		fconnection.writeToFile("#")
+		fconnection.writeToFile(newtext)
+		fconnection.writeToFile("#")
+		fconnection.writeToFile(greekwordcounts[i])
+		fconnection.writeToFile("#")
+		fconnection.writeToFile(latinwordcounts[i])
+		fconnection.writeToFile("#")
+		fconnection.writeToFile(arabicwordcounts[i])
+		fconnection.writeToFile("#")
 		baseurn := strings.Split(identifiers[i], ":")[3]
 		urnslice := strings.Split(baseurn, ".")
 		workgroup := urnslice[0]
 		work := strings.Join(urnslice[1:], ".")
-		f.WriteString(workgroup)
-		f.WriteString("#")
-		f.WriteString(work)
-		f.WriteString("#")
-		f.WriteString(baseurn)
-		f.WriteString("\n")
+		fconnection.writeToFile(workgroup)
+		fconnection.writeToFile("#")
+		fconnection.writeToFile(work)
+		fconnection.writeToFile("#")
+		fconnection.writeToFile(baseurn)
+		fconnection.writeToFile("\n")
 	}
 }
 
@@ -1853,7 +1847,7 @@ func checkExt(ext string) []string {
 		panic(err)
 	}
 	var files []string
-	filepath.Walk(pathS, func(path string, f os.FileInfo, _ error) error {
+	err2 := filepath.Walk(pathS, func(path string, f os.FileInfo, _ error) error {
 		if !f.IsDir() {
 			r, err := regexp.MatchString(ext, f.Name())
 			if err == nil && r {
@@ -1864,5 +1858,6 @@ func checkExt(ext string) []string {
 		}
 		return nil
 	})
+	check(err2)
 	return files
 }
