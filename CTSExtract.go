@@ -17,6 +17,23 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
+type ReportJSON struct {
+	Nodecount   int           `json:"nodeCount"`
+	Greekwords  int           `json:"greekWords"`
+	Latinwords  int           `json:"latinWords"`
+	Arabicwords int           `json:"arabicwords"`
+	Catalog     []JSONCatalog `json:"catalog"`
+}
+
+type JSONCatalog struct {
+	URN       string `json:"urn"`
+	GroupName string `json:"group_name"`
+	WorkName  string `json:"work_name"`
+	Language  string `json:"language"`
+	WordCount int    `json:"wordcount"`
+	Scaife    string `json:"scaife"`
+}
+
 type CTSCatalog struct {
 	URN            []string `json:"urn"`
 	CitationScheme []string `json:"citation_scheme"`
@@ -1408,6 +1425,44 @@ func main() {
 			fmt.Println("Writing HTML Report")
 			writeHTML(outputFile, ctscatalog, identifiers, texts, greekwordcounts, latinwordcounts, arabicwordcounts, greekwords, latinwords, arabicwords)
 		}
+		if os.Args[2] == "-Cat" {
+			fmt.Println("Writing JSON Catalog")
+			var jsoncat = []JSONCatalog{}
+			for i := range ctscatalog.URN {
+				scaifestring := ""
+				itemwords := 0
+				found := false
+				for j, v := range identifiers {
+					if !found {
+						if strings.Contains(v, ctscatalog.URN[i]) {
+							scaifestring = "https://scaife.perseus.org/reader/" + v
+							found = true
+						}
+					}
+					if strings.Contains(v, ctscatalog.URN[i]) {
+						greek, _ := strconv.Atoi(greekwordcounts[j])
+						latin, _ := strconv.Atoi(latinwordcounts[j])
+						arabic, _ := strconv.Atoi(arabicwordcounts[j])
+						itemwords = itemwords + greek + latin + arabic
+					}
+				}
+				catitem := JSONCatalog{
+					URN:       ctscatalog.URN[i],
+					GroupName: ctscatalog.GroupName[i],
+					WorkName:  ctscatalog.WorkTitle[i],
+					Language:  ctscatalog.Language[i],
+					WordCount: itemwords,
+					Scaife:    scaifestring,
+				}
+				jsoncat = append(jsoncat, catitem)
+			}
+			var report = ReportJSON{Nodecount: len(identifiers),
+				Greekwords:  greekwords,
+				Latinwords:  latinwords,
+				Arabicwords: arabicwords,
+				Catalog:     jsoncat}
+			writeCatalog(outputFile, report)
+		}
 	default:
 		fmt.Println("Invalid number of arguments")
 	}
@@ -1420,6 +1475,15 @@ func main() {
 	for i, v := range scheme {
 		fmt.Println(i, v)
 	}
+}
+
+func writeCatalog(outputFile string, report ReportJSON) {
+	jsonreport, err1 := json.Marshal(report)
+	check(err1)
+	f, err2 := os.Create(outputFile)
+	check(err2)
+	defer f.Close()
+	f.WriteString(string(jsonreport))
 }
 
 func writeHTML(outputFile string, ctscatalog CTSCatalog, identifiers, texts, greekwordcounts, latinwordcounts, arabicwordcounts []string, greekwords, latinwords, arabicwords int) {
