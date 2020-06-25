@@ -617,8 +617,7 @@ func main() {
 					r := strings.NewReader(data.Node[i].InnerXML)
 					decoder := xml.NewDecoder(r)
 					for {
-						t, err := decoder.Token()
-						check(err)
+						t, _ := decoder.Token()
 						if t == nil {
 							break
 						}
@@ -800,8 +799,7 @@ func main() {
 						r := strings.NewReader(data.Node[i].Node[j].InnerXML)
 						decoder := xml.NewDecoder(r)
 						for {
-							t, err := decoder.Token()
-							check(err)
+							t, _ := decoder.Token()
 							if t == nil {
 								break
 							}
