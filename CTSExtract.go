@@ -1634,12 +1634,12 @@ func main() {
 }
 
 func writeMarkdown(ctscatalog CTSCatalog, identifier, texts []string) {
-	outputStr := ""
 	if _, err := os.Stat("TEITOCEX_OUTPUT"); os.IsNotExist(err) {
 		err := os.Mkdir("TEITOCEX_OUTPUT", 0700)
 		check(err)
 	}
 	for i, v := range ctscatalog.URN {
+		outputStr := ""
 		ss := strings.Split(v, ":")
 		filen := ss[len(ss)-1]
 		filename := filepath.Join([]string{"TEITOCEX_OUTPUT", string(filen + ".md")}...)
