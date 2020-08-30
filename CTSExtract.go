@@ -1634,8 +1634,10 @@ func main() {
 }
 
 func writeMarkdown(ctscatalog CTSCatalog, identifier, texts []string) {
+	outputStr := ""
 	if _, err := os.Stat("TEITOCEX_OUTPUT"); os.IsNotExist(err) {
-		os.Mkdir("TEITOCEX_OUTPUT", 0700)
+		err := os.Mkdir("TEITOCEX_OUTPUT", 0700)
+		check(err)
 	}
 	for i, v := range ctscatalog.URN {
 		ss := strings.Split(v, ":")
@@ -1644,56 +1646,56 @@ func writeMarkdown(ctscatalog CTSCatalog, identifier, texts []string) {
 		f, err := os.Create(filename)
 		check(err)
 		defer f.Close()
-		f.WriteString("---\n")
-		f.WriteString("title: \"")
-		f.WriteString(ctscatalog.WorkTitle[i])
-		f.WriteString("\"\n")
-		f.WriteString("subtitle: |\n\tAn Open Greek and Latin Edition \\ \n")
+		outputStr = outputStr + "---\n"
+		outputStr = outputStr + "title: \""
+		outputStr = outputStr + ctscatalog.WorkTitle[i]
+		outputStr = outputStr + "\"\n"
+		outputStr = outputStr + "subtitle: |\n\tAn Open Greek and Latin Edition \\ \n"
 		if strings.TrimSpace(ctscatalog.VersionLabel[i]) != "" {
-			f.WriteString(ctscatalog.VersionLabel[i])
-			f.WriteString("\\ \n")
+			outputStr = outputStr + ctscatalog.VersionLabel[i]
+			outputStr = outputStr + "\\ \n"
 		}
-		f.WriteString("author: \"")
-		f.WriteString(ctscatalog.GroupName[i])
-		f.WriteString("\"\n")
+		outputStr = outputStr + "author: \""
+		outputStr = outputStr + ctscatalog.GroupName[i]
+		outputStr = outputStr + "\"\n"
 		// last line yaml
-		f.WriteString("header-includes: | \n\t\\usepackage{fancyhdr}\n\t\\pagestyle{fancy}\n\t\\fancyhead[CO,CE]{}\n\t\\fancyfoot[CO,CE]{OGL Edition, CC-BY-SA 4.0}\n\t\\fancyfoot[LE,RO]{\\thepage}\nthanks: \"This work has been produced by the Open Greek and Latin project through the help of volunteers. See contributions for details.\"\n...\n\n")
+		outputStr = outputStr + "header-includes: | \n\t\\usepackage{fancyhdr}\n\t\\pagestyle{fancy}\n\t\\fancyhead[CO,CE]{}\n\t\\fancyfoot[CO,CE]{OGL Edition, CC-BY-SA 4.0}\n\t\\fancyfoot[LE,RO]{\\thepage}\nthanks: \"This work has been produced by the Open Greek and Latin project through the help of volunteers. See contributions for details.\"\n...\n\n"
 		// start text
-		f.WriteString("# Contributions\n\n")
+		outputStr = outputStr + "# Contributions\n\n"
 
 		for _, v := range ctscatalog.Contributors[i].Contribution {
 			if strings.Contains(strings.ToLower(v.Resp), "proofread") {
-				f.WriteString("### ")
-				f.WriteString(strings.Title(v.Resp))
-				f.WriteString("\n\n")
+				outputStr = outputStr + "### "
+				outputStr = outputStr + strings.Title(v.Resp)
+				outputStr = outputStr + "\n\n"
 				for _, v2 := range v.PersName {
-					f.WriteString("**")
-					f.WriteString(strings.TrimSpace(v2))
-					f.WriteString("**")
-					f.WriteString("  \n")
+					outputStr = outputStr + "**"
+					outputStr = outputStr + strings.TrimSpace(v2)
+					outputStr = outputStr + "**"
+					outputStr = outputStr + "  \n"
 				}
 			}
 		}
-		f.WriteString("\n")
+		outputStr = outputStr + "\n"
 		for _, v := range ctscatalog.Contributors[i].Contribution {
 			if !strings.Contains(strings.ToLower(v.Resp), "proofread") {
-				f.WriteString("### ")
-				f.WriteString(strings.Title(v.Resp))
-				f.WriteString("\n\n")
+				outputStr = outputStr + "### "
+				outputStr = outputStr + strings.Title(v.Resp)
+				outputStr = outputStr + "\n\n"
 				for i2, v2 := range v.PersName {
-					f.WriteString(strings.TrimSpace(v2))
-					f.WriteString("  \n")
+					outputStr = outputStr + strings.TrimSpace(v2)
+					outputStr = outputStr + "  \n"
 					if i2 == len(v.PersName)-1 {
-						f.WriteString("  \n")
+						outputStr = outputStr + "  \n"
 					}
 				}
 			}
 		}
-		f.WriteString("### Markdown and PDF Production\n\nThis version was produced by [TEItoCEX](https://github.com/ThomasK81/TEItoCEX) written by Thomas Koentges.")
-		f.WriteString("\n\n")
-		f.WriteString("# ")
-		f.WriteString(ctscatalog.WorkTitle[i])
-		f.WriteString("\n")
+		outputStr = outputStr + "### Markdown and PDF Production\n\nThis version was produced by [TEItoCEX](https://github.com/ThomasK81/TEItoCEX) written by Thomas Koentges."
+		outputStr = outputStr + "\n\n"
+		outputStr = outputStr + "# "
+		outputStr = outputStr + ctscatalog.WorkTitle[i]
+		outputStr = outputStr + "\n"
 		citationFormat := strings.Split(ctscatalog.CitationScheme[i], ",")
 		firstlevel := ""
 		secondlevel := ""
@@ -1704,7 +1706,7 @@ func writeMarkdown(ctscatalog CTSCatalog, identifier, texts []string) {
 			if strings.Contains(v2, v) {
 				passage = true
 				lineNumber++
-				f.WriteString("\n")
+				outputStr = outputStr + "\n"
 				ss2 := strings.Split(v2, ":")
 				citation := ss2[len(ss2)-1]
 				switch len(citationFormat) {
@@ -1713,33 +1715,33 @@ func writeMarkdown(ctscatalog CTSCatalog, identifier, texts []string) {
 					newFirst := ss3[0]
 					if firstlevel != newFirst {
 						firstlevel = newFirst
-						f.WriteString("## ")
-						f.WriteString(strings.Title(citationFormat[0]))
-						f.WriteString(" ")
-						f.WriteString(firstlevel)
-						f.WriteString("\n\n")
+						outputStr = outputStr + "## "
+						outputStr = outputStr + strings.Title(citationFormat[0])
+						outputStr = outputStr + " "
+						outputStr = outputStr + firstlevel
+						outputStr = outputStr + "\n\n"
 						hit = true
 					}
 					if strings.TrimSpace(strings.ToLower(citationFormat[1])) != "line" {
-						f.WriteString("### ")
-						f.WriteString(citationFormat[1])
-						f.WriteString(" ")
-						f.WriteString(citation)
-						f.WriteString("\n\n")
-						f.WriteString(texts[i2])
-						f.WriteString("\n")
+						outputStr = outputStr + "### "
+						outputStr = outputStr + citationFormat[1]
+						outputStr = outputStr + " "
+						outputStr = outputStr + citation
+						outputStr = outputStr + "\n\n"
+						outputStr = outputStr + texts[i2]
+						outputStr = outputStr + "\n"
 					} else {
 						if math.Mod(float64(lineNumber), 10) == 0 {
-							f.WriteString("\n#### ")
-							f.WriteString(citation)
-							f.WriteString("\n\n")
+							outputStr = outputStr + "\n#### "
+							outputStr = outputStr + citation
+							outputStr = outputStr + "\n\n"
 						}
 						if hit {
 							hit = false
 							lineNumber = 0
 						}
-						f.WriteString(texts[i2])
-						f.WriteString("  \n")
+						outputStr = outputStr + texts[i2]
+						outputStr = outputStr + "  \n"
 					}
 				case 3:
 					ss3 := strings.Split(citation, ".")
@@ -1748,64 +1750,64 @@ func writeMarkdown(ctscatalog CTSCatalog, identifier, texts []string) {
 					if firstlevel != newFirst {
 						firstlevel = newFirst
 						secondlevel = newSecond
-						f.WriteString("## ")
-						f.WriteString(strings.Title(citationFormat[0]))
-						f.WriteString(" ")
-						f.WriteString(firstlevel)
-						f.WriteString("\n\n")
-						f.WriteString("### ")
-						f.WriteString(strings.Title(citationFormat[1]))
-						f.WriteString(" ")
-						f.WriteString(firstlevel)
-						f.WriteString(".")
-						f.WriteString(newSecond)
-						f.WriteString("\n\n")
+						outputStr = outputStr + "## "
+						outputStr = outputStr + strings.Title(citationFormat[0])
+						outputStr = outputStr + " "
+						outputStr = outputStr + firstlevel
+						outputStr = outputStr + "\n\n"
+						outputStr = outputStr + "### "
+						outputStr = outputStr + strings.Title(citationFormat[1])
+						outputStr = outputStr + " "
+						outputStr = outputStr + firstlevel
+						outputStr = outputStr + "."
+						outputStr = outputStr + newSecond
+						outputStr = outputStr + "\n\n"
 						hit = true
 					} else {
 						if secondlevel != newSecond {
-							f.WriteString("### ")
-							f.WriteString(strings.Title(citationFormat[1]))
-							f.WriteString(" ")
-							f.WriteString(firstlevel)
-							f.WriteString(".")
-							f.WriteString(newSecond)
-							f.WriteString("\n\n")
+							outputStr = outputStr + "### "
+							outputStr = outputStr + strings.Title(citationFormat[1])
+							outputStr = outputStr + " "
+							outputStr = outputStr + firstlevel
+							outputStr = outputStr + "."
+							outputStr = outputStr + newSecond
+							outputStr = outputStr + "\n\n"
 							hit = true
 						}
 					}
 					if strings.TrimSpace(strings.ToLower(citationFormat[2])) != "line" {
-						f.WriteString("#### ")
-						f.WriteString(strings.Title(citationFormat[2]))
-						f.WriteString(" ")
-						f.WriteString(citation)
-						f.WriteString("\n\n")
-						f.WriteString(texts[i2])
-						f.WriteString("\n")
+						outputStr = outputStr + "#### "
+						outputStr = outputStr + strings.Title(citationFormat[2])
+						outputStr = outputStr + " "
+						outputStr = outputStr + citation
+						outputStr = outputStr + "\n\n"
+						outputStr = outputStr + texts[i2]
+						outputStr = outputStr + "\n"
 					} else {
 						if math.Mod(float64(lineNumber), 10) == 0 {
-							f.WriteString("\n#### ")
-							f.WriteString(citation)
-							f.WriteString("\n\n")
+							outputStr = outputStr + "\n#### "
+							outputStr = outputStr + citation
+							outputStr = outputStr + "\n\n"
 						}
 						if hit {
 							hit = false
 							lineNumber = 0
 						}
-						f.WriteString(texts[i2])
-						f.WriteString("  \n")
+						outputStr = outputStr + texts[i2]
+						outputStr = outputStr + "  \n"
 					}
 				default:
 					if strings.TrimSpace(strings.ToLower(citationFormat[0])) == "book" {
-						f.WriteString("## ")
+						outputStr = outputStr + "## "
 					} else {
-						f.WriteString("### ")
+						outputStr = outputStr + "### "
 					}
-					f.WriteString(strings.Title(citationFormat[0]))
-					f.WriteString(" ")
-					f.WriteString(citation)
-					f.WriteString("\n\n")
-					f.WriteString(texts[i2])
-					f.WriteString("\n\n")
+					outputStr = outputStr + strings.Title(citationFormat[0])
+					outputStr = outputStr + " "
+					outputStr = outputStr + citation
+					outputStr = outputStr + "\n\n"
+					outputStr = outputStr + texts[i2]
+					outputStr = outputStr + "\n\n"
 				}
 			} else {
 				if passage {
@@ -1813,6 +1815,8 @@ func writeMarkdown(ctscatalog CTSCatalog, identifier, texts []string) {
 				}
 			}
 		}
+		_, err = f.WriteString(outputStr)
+		check(err)
 	}
 }
 
