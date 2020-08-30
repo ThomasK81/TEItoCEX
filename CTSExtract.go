@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"math"
 	"os"
 	"path"
 	"path/filepath"
@@ -39,14 +40,24 @@ type JSONCatalog struct {
 
 //CTSCatalog is the main container for CTS catalog data in the format expected by CEX, but in a way that it can integrated into a number of ways.
 type CTSCatalog struct {
-	URN            []string `json:"urn"`
-	CitationScheme []string `json:"citation_scheme"`
-	GroupName      []string `json:"group_name"`
-	WorkTitle      []string `json:"work_title"`
-	VersionLabel   []string `json:"version_label"`
-	ExemplarLabel  []string `json:"exemplar_label"`
-	Online         []string `json:"online"`
-	Language       []string `json:"language"`
+	URN            []string    `json:"urn"`
+	CitationScheme []string    `json:"citation_scheme"`
+	GroupName      []string    `json:"group_name"`
+	WorkTitle      []string    `json:"work_title"`
+	VersionLabel   []string    `json:"version_label"`
+	ExemplarLabel  []string    `json:"exemplar_label"`
+	Online         []string    `json:"online"`
+	Language       []string    `json:"language"`
+	Contributors   []JSONContr `json:"contributions"`
+}
+
+type JSONContr struct {
+	Contribution []JSONContrs `json:"contribution"`
+}
+
+type JSONContrs struct {
+	Resp     string   `json:"resp"`
+	PersName []string `json:"persName"`
 }
 
 //ExportDocument is the old JSON implementation. Preserved for legacy.
@@ -98,17 +109,20 @@ type LangInfo struct {
 	Language string `xml:"ident,attr"`
 }
 
-//RefPattern container for refpattern
-type RefPattern struct {
-	RefPattern []XPathInfo `xml:"teiHeader>encodingDesc>refsDecl>cRefPattern"`
-	Title      []string    `xml:"teiHeader>fileDesc>titleStmt>title"`
-	Author     []string    `xml:"teiHeader>fileDesc>titleStmt>author"`
-	Languages  []LangInfo  `xml:"teiHeader>profileDesc>langUsage>language"`
+//OGLHeader container for header information
+type OGLHeader struct {
+	RefPattern   []XPathInfo   `xml:"teiHeader>encodingDesc>refsDecl>cRefPattern"`
+	Title        []string      `xml:"teiHeader>fileDesc>titleStmt>title"`
+	Author       []string      `xml:"teiHeader>fileDesc>titleStmt>author"`
+	Languages    []LangInfo    `xml:"teiHeader>profileDesc>langUsage>language"`
+	Contributors []Contributor `xml:"teiHeader>fileDesc>titleStmt>respStmt"`
 }
 
-// type teiHeader struct {
-// 	RefPattern []XPathInfo `xml:"teiHeader>encodingDesc>refsDecl>cRefPattern"`
-// }
+//Contributor container for metadata regarding contributing people
+type Contributor struct {
+	Resp     string   `xml:"resp"`
+	PersName []string `xml:"persName"`
+}
 
 //SmallestNode container for smallest CTS node
 type SmallestNode struct {
@@ -412,6 +426,7 @@ func main() {
 	var querystrings []string
 	var identifiers []string
 	var texts []string
+	var unstrippedTexts []string
 	var greekwordcounts []string
 	var latinwordcounts []string
 	var arabicwordcounts []string
@@ -435,16 +450,16 @@ func main() {
 		if len(match) > 0 {
 			basestr = match[0]
 		}
-		var xpathinfo RefPattern
-		err = xml.Unmarshal(byteValue, &xpathinfo)
+		var headerinfo OGLHeader
+		err = xml.Unmarshal(byteValue, &headerinfo)
 		check(err)
-		if len(xpathinfo.RefPattern) == 0 {
+		if len(headerinfo.RefPattern) == 0 {
 			noxpath = append(noxpath, path.Base(file))
 		}
-		if len(xpathinfo.RefPattern) > 0 {
+		if len(headerinfo.RefPattern) > 0 {
 			var meta []Metadata
-			for i := range xpathinfo.RefPattern {
-				meta = append(meta, Metadata{Xpath: xpathinfo.RefPattern[i].XPathInfo, Kind: xpathinfo.RefPattern[i].XPathWhat})
+			for i := range headerinfo.RefPattern {
+				meta = append(meta, Metadata{Xpath: headerinfo.RefPattern[i].XPathInfo, Kind: headerinfo.RefPattern[i].XPathWhat})
 			}
 			sort.Slice(meta, func(i int, j int) bool {
 				return len(meta[i].Xpath) < len(meta[j].Xpath)
@@ -455,8 +470,8 @@ func main() {
 				whatkind = append(whatkind, meta[i].Kind)
 			}
 			languages := []string{}
-			for i := range xpathinfo.Languages {
-				languages = append(languages, xpathinfo.Languages[i].Language)
+			for i := range headerinfo.Languages {
+				languages = append(languages, headerinfo.Languages[i].Language)
 			}
 			language := strings.Join(languages, ",")
 			kind := strings.Join(whatkind, ",")
@@ -466,12 +481,12 @@ func main() {
 			urn = basestr + urn
 			ctscatalog.URN = append(ctscatalog.URN, urn)
 			ctscatalog.CitationScheme = append(ctscatalog.CitationScheme, kind)
-			group := strings.Join(xpathinfo.Author, ",")
+			group := strings.Join(headerinfo.Author, ",")
 			group = strings.Replace(group, "\n", " ", -1)
 			group = tagsRegExp.ReplaceAllString(group, "")
 			group = strings.TrimSpace(group)
 			ctscatalog.GroupName = append(ctscatalog.GroupName, group)
-			worktitle := strings.Join(xpathinfo.Title, ",")
+			worktitle := strings.Join(headerinfo.Title, ",")
 			worktitle = strings.Replace(worktitle, "\n", " ", -1)
 			worktitle = tagsRegExp.ReplaceAllString(worktitle, "")
 			worktitle = strings.TrimSpace(worktitle)
@@ -480,6 +495,16 @@ func main() {
 			ctscatalog.ExemplarLabel = append(ctscatalog.ExemplarLabel, "")
 			ctscatalog.Online = append(ctscatalog.Online, "True")
 			ctscatalog.Language = append(ctscatalog.Language, language)
+			// adding contributors
+			contribution := JSONContr{}
+			for _, v := range headerinfo.Contributors {
+				tempContr := JSONContrs{}
+				tempContr.Resp = v.Resp
+				tempContr.PersName = v.PersName
+				contribution.Contribution = append(contribution.Contribution, tempContr)
+			}
+			ctscatalog.Contributors = append(ctscatalog.Contributors, contribution)
+			// debugging end
 			switch {
 			case querystring == "/tei:TEI/tei:text/tei:body/tei:div/tei:div[@n='$1']/tei:div[@n='$2']/tei:div[@n='$3']/tei:p[@n='$4']":
 				tempscheme = "1"
@@ -497,6 +522,7 @@ func main() {
 								identifier := strings.Join(id, ".")
 								identifier = strings.Join([]string{urn, identifier}, ":")
 								text := data.Node[i].Node[j].Node[k].Node[l].InnerXML
+								unstrippedTexts = append(unstrippedTexts, strings.TrimSpace(text))
 								text = stringcleaning(text)
 
 								words := greekWordRegExp.FindAllString(text, -1)
@@ -541,6 +567,7 @@ func main() {
 								check(err)
 								identifier := strings.Join([]string{urn, info.Number}, ":")
 								text := info.InnerXML
+								unstrippedTexts = append(unstrippedTexts, strings.TrimSpace(text))
 								text = stringcleaning(text)
 
 								words := greekWordRegExp.FindAllString(text, -1)
@@ -585,6 +612,7 @@ func main() {
 								check(err)
 								identifier := strings.Join([]string{urn, info.Number}, ":")
 								text := info.InnerXML
+								unstrippedTexts = append(unstrippedTexts, strings.TrimSpace(text))
 								text = stringcleaning(text)
 
 								words := greekWordRegExp.FindAllString(text, -1)
@@ -629,6 +657,7 @@ func main() {
 								check(err)
 								identifier := strings.Join([]string{urn, info.Number}, ":")
 								text := info.InnerXML
+								unstrippedTexts = append(unstrippedTexts, strings.TrimSpace(text))
 								text = stringcleaning(text)
 
 								words := greekWordRegExp.FindAllString(text, -1)
@@ -673,6 +702,7 @@ func main() {
 								check(err)
 								identifier := strings.Join([]string{urn, info.Number}, ":")
 								text := info.InnerXML
+								unstrippedTexts = append(unstrippedTexts, strings.TrimSpace(text))
 								text = stringcleaning(text)
 
 								words := greekWordRegExp.FindAllString(text, -1)
@@ -717,6 +747,7 @@ func main() {
 								check(err)
 								identifier := strings.Join([]string{urn, info.Number}, ":")
 								text := info.InnerXML
+								unstrippedTexts = append(unstrippedTexts, strings.TrimSpace(text))
 								text = stringcleaning(text)
 
 								words := greekWordRegExp.FindAllString(text, -1)
@@ -764,6 +795,7 @@ func main() {
 								identifier := strings.Join(id, ".")
 								identifier = strings.Join([]string{urn, identifier}, ":")
 								text := info.InnerXML
+								unstrippedTexts = append(unstrippedTexts, strings.TrimSpace(text))
 								text = stringcleaning(text)
 
 								words := greekWordRegExp.FindAllString(text, -1)
@@ -813,6 +845,7 @@ func main() {
 									identifier := strings.Join(id, ".")
 									identifier = strings.Join([]string{urn, identifier}, ":")
 									text := info.InnerXML
+									unstrippedTexts = append(unstrippedTexts, strings.TrimSpace(text))
 									text = stringcleaning(text)
 
 									words := greekWordRegExp.FindAllString(text, -1)
@@ -861,6 +894,7 @@ func main() {
 								identifier := strings.Join(id, ".")
 								identifier = strings.Join([]string{urn, identifier}, ":")
 								text := info.InnerXML
+								unstrippedTexts = append(unstrippedTexts, strings.TrimSpace(text))
 								text = stringcleaning(text)
 
 								words := greekWordRegExp.FindAllString(text, -1)
@@ -896,6 +930,7 @@ func main() {
 							identifier := strings.Join(id, ".")
 							identifier = strings.Join([]string{urn, identifier}, ":")
 							text := data.Node[i].Node[j].Node[k].InnerXML
+							unstrippedTexts = append(unstrippedTexts, strings.TrimSpace(text))
 							text = stringcleaning(text)
 
 							words := greekWordRegExp.FindAllString(text, -1)
@@ -930,6 +965,7 @@ func main() {
 							identifier := strings.Join(id, ".")
 							identifier = strings.Join([]string{urn, identifier}, ":")
 							text := data.Node[i].Node[j].Node[k].InnerXML
+							unstrippedTexts = append(unstrippedTexts, strings.TrimSpace(text))
 							text = stringcleaning(text)
 
 							words := greekWordRegExp.FindAllString(text, -1)
@@ -960,6 +996,7 @@ func main() {
 				for _, node := range data.Node {
 					identifier := strings.Join([]string{urn, node.Number}, ":")
 					text := node.InnerXML
+					unstrippedTexts = append(unstrippedTexts, strings.TrimSpace(text))
 					text = stringcleaning(text)
 
 					words := greekWordRegExp.FindAllString(text, -1)
@@ -988,6 +1025,7 @@ func main() {
 				for _, node := range data.Node {
 					identifier := strings.Join([]string{urn, node.Number}, ":")
 					text := node.InnerXML
+					unstrippedTexts = append(unstrippedTexts, strings.TrimSpace(text))
 					text = stringcleaning(text)
 
 					words := greekWordRegExp.FindAllString(text, -1)
@@ -1016,6 +1054,7 @@ func main() {
 				for _, node := range data.Node {
 					identifier := strings.Join([]string{urn, node.Number}, ":")
 					text := node.InnerXML
+					unstrippedTexts = append(unstrippedTexts, strings.TrimSpace(text))
 					text = stringcleaning(text)
 
 					words := greekWordRegExp.FindAllString(text, -1)
@@ -1044,6 +1083,7 @@ func main() {
 				for _, node := range data.Node {
 					identifier := strings.Join([]string{urn, node.Number}, ":")
 					text := node.InnerXML
+					unstrippedTexts = append(unstrippedTexts, strings.TrimSpace(text))
 					text = stringcleaning(text)
 
 					words := greekWordRegExp.FindAllString(text, -1)
@@ -1072,6 +1112,7 @@ func main() {
 				for _, node := range data.Node {
 					identifier := strings.Join([]string{urn, node.Number}, ":")
 					text := node.InnerXML
+					unstrippedTexts = append(unstrippedTexts, strings.TrimSpace(text))
 					text = stringcleaning(text)
 
 					words := greekWordRegExp.FindAllString(text, -1)
@@ -1103,6 +1144,7 @@ func main() {
 						identifier := strings.Join(id, ".")
 						identifier = strings.Join([]string{urn, identifier}, ":")
 						text := data.Node[i].Node[j].InnerXML
+						unstrippedTexts = append(unstrippedTexts, strings.TrimSpace(text))
 						text = stringcleaning(text)
 
 						words := greekWordRegExp.FindAllString(text, -1)
@@ -1135,6 +1177,7 @@ func main() {
 						identifier := strings.Join(id, ".")
 						identifier = strings.Join([]string{urn, identifier}, ":")
 						text := data.Node[i].Node[j].InnerXML
+						unstrippedTexts = append(unstrippedTexts, strings.TrimSpace(text))
 						text = stringcleaning(text)
 
 						words := greekWordRegExp.FindAllString(text, -1)
@@ -1167,6 +1210,7 @@ func main() {
 						identifier := strings.Join(id, ".")
 						identifier = strings.Join([]string{urn, identifier}, ":")
 						text := data.Node[i].Node[j].InnerXML
+						unstrippedTexts = append(unstrippedTexts, strings.TrimSpace(text))
 						text = stringcleaning(text)
 
 						words := greekWordRegExp.FindAllString(text, -1)
@@ -1199,6 +1243,7 @@ func main() {
 						identifier := strings.Join(id, ".")
 						identifier = strings.Join([]string{urn, identifier}, ":")
 						text := data.Node[i].Node[j].InnerXML
+						unstrippedTexts = append(unstrippedTexts, strings.TrimSpace(text))
 						text = stringcleaning(text)
 
 						words := greekWordRegExp.FindAllString(text, -1)
@@ -1232,6 +1277,7 @@ func main() {
 							identifier := strings.Join(id, ".")
 							identifier = strings.Join([]string{urn, identifier}, ":")
 							text := data.Node[i].Node[j].Node[k].InnerXML
+							unstrippedTexts = append(unstrippedTexts, strings.TrimSpace(text))
 							text = stringcleaning(text)
 
 							words := greekWordRegExp.FindAllString(text, -1)
@@ -1262,6 +1308,7 @@ func main() {
 				for _, node := range data.Node {
 					identifier := strings.Join([]string{urn, node.Number}, ":")
 					text := node.InnerXML
+					unstrippedTexts = append(unstrippedTexts, strings.TrimSpace(text))
 					text = stringcleaning(text)
 
 					words := greekWordRegExp.FindAllString(text, -1)
@@ -1293,6 +1340,7 @@ func main() {
 						identifier := strings.Join(id, ".")
 						identifier = strings.Join([]string{urn, identifier}, ":")
 						text := data.Node[i].Node[j].InnerXML
+						unstrippedTexts = append(unstrippedTexts, strings.TrimSpace(text))
 						text = stringcleaning(text)
 
 						words := greekWordRegExp.FindAllString(text, -1)
@@ -1326,6 +1374,7 @@ func main() {
 							identifier := strings.Join(id, ".")
 							identifier = strings.Join([]string{urn, identifier}, ":")
 							text := data.Node[i].Node[j].Node[k].InnerXML
+							unstrippedTexts = append(unstrippedTexts, strings.TrimSpace(text))
 							text = stringcleaning(text)
 
 							words := greekWordRegExp.FindAllString(text, -1)
@@ -1360,6 +1409,7 @@ func main() {
 							identifier := strings.Join(id, ".")
 							identifier = strings.Join([]string{urn, identifier}, ":")
 							text := data.Node[i].Node[j].Node[k].InnerXML
+							unstrippedTexts = append(unstrippedTexts, strings.TrimSpace(text))
 							text = stringcleaning(text)
 
 							words := greekWordRegExp.FindAllString(text, -1)
@@ -1393,6 +1443,7 @@ func main() {
 						identifier := strings.Join(id, ".")
 						identifier = strings.Join([]string{urn, identifier}, ":")
 						text := data.Node[i].Node[j].InnerXML
+						unstrippedTexts = append(unstrippedTexts, strings.TrimSpace(text))
 						text = stringcleaning(text)
 						words := greekWordRegExp.FindAllString(text, -1)
 						latinword := latinWordRegExp.FindAllString(text, -1)
@@ -1426,6 +1477,7 @@ func main() {
 								identifier := strings.Join(id, ".")
 								identifier = strings.Join([]string{urn, identifier}, ":")
 								text := data.Node[i].Node[j].Node[k].Node[l].InnerXML
+								unstrippedTexts = append(unstrippedTexts, strings.TrimSpace(text))
 								text = stringcleaning(text)
 
 								words := greekWordRegExp.FindAllString(text, -1)
@@ -1461,6 +1513,7 @@ func main() {
 							identifier := strings.Join(id, ".")
 							identifier = strings.Join([]string{urn, identifier}, ":")
 							text := data.Node[i].Node[j].Node[k].InnerXML
+							unstrippedTexts = append(unstrippedTexts, strings.TrimSpace(text))
 							text = stringcleaning(text)
 
 							words := greekWordRegExp.FindAllString(text, -1)
@@ -1524,6 +1577,10 @@ func main() {
 			fmt.Println("Writing HTML Report")
 			writeHTML(outputFile, ctscatalog, identifiers, texts, greekwordcounts, latinwordcounts, arabicwordcounts, greekwords, latinwords, arabicwords)
 		}
+		if os.Args[2] == "-Markdown" {
+			fmt.Println("Writing Markdown Files")
+			writeMarkdown(ctscatalog, identifiers, unstrippedTexts)
+		}
 		if os.Args[2] == "-Cat" {
 			fmt.Println("Writing JSON Catalog")
 			var jsoncat = []JSONCatalog{}
@@ -1573,6 +1630,189 @@ func main() {
 	fmt.Println("The following schemes were used:")
 	for i, v := range scheme {
 		fmt.Println(i, v)
+	}
+}
+
+func writeMarkdown(ctscatalog CTSCatalog, identifier, texts []string) {
+	if _, err := os.Stat("TEITOCEX_OUTPUT"); os.IsNotExist(err) {
+		os.Mkdir("TEITOCEX_OUTPUT", 0700)
+	}
+	for i, v := range ctscatalog.URN {
+		ss := strings.Split(v, ":")
+		filen := ss[len(ss)-1]
+		filename := filepath.Join([]string{"TEITOCEX_OUTPUT", string(filen + ".md")}...)
+		f, err := os.Create(filename)
+		check(err)
+		defer f.Close()
+		f.WriteString("---\n")
+		f.WriteString("title: \"")
+		f.WriteString(ctscatalog.WorkTitle[i])
+		f.WriteString("\"\n")
+		f.WriteString("subtitle: |\n\tAn Open Greek and Latin Edition \\ \n")
+		if strings.TrimSpace(ctscatalog.VersionLabel[i]) != "" {
+			f.WriteString(ctscatalog.VersionLabel[i])
+			f.WriteString("\\ \n")
+		}
+		f.WriteString("author: \"")
+		f.WriteString(ctscatalog.GroupName[i])
+		f.WriteString("\"\n")
+		// last line yaml
+		f.WriteString("header-includes: | \n\t\\usepackage{fancyhdr}\n\t\\pagestyle{fancy}\n\t\\fancyhead[CO,CE]{}\n\t\\fancyfoot[CO,CE]{OGL Edition, CC-BY-SA 4.0}\n\t\\fancyfoot[LE,RO]{\\thepage}\nthanks: \"This work has been produced by the Open Greek and Latin project through the help of volunteers. See contributions for details.\"\n...\n\n")
+		// start text
+		f.WriteString("# Contributions\n\n")
+
+		for _, v := range ctscatalog.Contributors[i].Contribution {
+			if strings.Contains(strings.ToLower(v.Resp), "proofread") {
+				f.WriteString("### ")
+				f.WriteString(strings.Title(v.Resp))
+				f.WriteString("\n\n")
+				for _, v2 := range v.PersName {
+					f.WriteString("**")
+					f.WriteString(strings.TrimSpace(v2))
+					f.WriteString("**")
+					f.WriteString("  \n")
+				}
+			}
+		}
+		f.WriteString("\n")
+		for _, v := range ctscatalog.Contributors[i].Contribution {
+			if !strings.Contains(strings.ToLower(v.Resp), "proofread") {
+				f.WriteString("### ")
+				f.WriteString(strings.Title(v.Resp))
+				f.WriteString("\n\n")
+				for i2, v2 := range v.PersName {
+					f.WriteString(strings.TrimSpace(v2))
+					f.WriteString("  \n")
+					if i2 == len(v.PersName)-1 {
+						f.WriteString("  \n")
+					}
+				}
+			}
+		}
+		f.WriteString("### Markdown and PDF Production\n\nThis version was produced by [TEItoCEX](https://github.com/ThomasK81/TEItoCEX) written by Thomas Koentges.")
+		f.WriteString("\n\n")
+		f.WriteString("# ")
+		f.WriteString(ctscatalog.WorkTitle[i])
+		f.WriteString("\n")
+		citationFormat := strings.Split(ctscatalog.CitationScheme[i], ",")
+		firstlevel := ""
+		secondlevel := ""
+		lineNumber := 0
+		hit := false
+		passage := false
+		for i2, v2 := range identifier {
+			if strings.Contains(v2, v) {
+				passage = true
+				lineNumber++
+				f.WriteString("\n")
+				ss2 := strings.Split(v2, ":")
+				citation := ss2[len(ss2)-1]
+				switch len(citationFormat) {
+				case 2:
+					ss3 := strings.Split(citation, ".")
+					newFirst := ss3[0]
+					if firstlevel != newFirst {
+						firstlevel = newFirst
+						f.WriteString("## ")
+						f.WriteString(strings.Title(citationFormat[0]))
+						f.WriteString(" ")
+						f.WriteString(firstlevel)
+						f.WriteString("\n\n")
+						hit = true
+					}
+					if strings.TrimSpace(strings.ToLower(citationFormat[1])) != "line" {
+						f.WriteString("### ")
+						f.WriteString(citationFormat[1])
+						f.WriteString(" ")
+						f.WriteString(citation)
+						f.WriteString("\n\n")
+						f.WriteString(texts[i2])
+						f.WriteString("\n")
+					} else {
+						if math.Mod(float64(lineNumber), 10) == 0 {
+							f.WriteString("\n#### ")
+							f.WriteString(citation)
+							f.WriteString("\n\n")
+						}
+						if hit {
+							hit = false
+							lineNumber = 0
+						}
+						f.WriteString(texts[i2])
+						f.WriteString("  \n")
+					}
+				case 3:
+					ss3 := strings.Split(citation, ".")
+					newFirst := ss3[0]
+					newSecond := ss3[1]
+					if firstlevel != newFirst {
+						firstlevel = newFirst
+						secondlevel = newSecond
+						f.WriteString("## ")
+						f.WriteString(strings.Title(citationFormat[0]))
+						f.WriteString(" ")
+						f.WriteString(firstlevel)
+						f.WriteString("\n\n")
+						f.WriteString("### ")
+						f.WriteString(strings.Title(citationFormat[1]))
+						f.WriteString(" ")
+						f.WriteString(firstlevel)
+						f.WriteString(".")
+						f.WriteString(newSecond)
+						f.WriteString("\n\n")
+						hit = true
+					} else {
+						if secondlevel != newSecond {
+							f.WriteString("### ")
+							f.WriteString(strings.Title(citationFormat[1]))
+							f.WriteString(" ")
+							f.WriteString(firstlevel)
+							f.WriteString(".")
+							f.WriteString(newSecond)
+							f.WriteString("\n\n")
+							hit = true
+						}
+					}
+					if strings.TrimSpace(strings.ToLower(citationFormat[2])) != "line" {
+						f.WriteString("#### ")
+						f.WriteString(strings.Title(citationFormat[2]))
+						f.WriteString(" ")
+						f.WriteString(citation)
+						f.WriteString("\n\n")
+						f.WriteString(texts[i2])
+						f.WriteString("\n")
+					} else {
+						if math.Mod(float64(lineNumber), 10) == 0 {
+							f.WriteString("\n#### ")
+							f.WriteString(citation)
+							f.WriteString("\n\n")
+						}
+						if hit {
+							hit = false
+							lineNumber = 0
+						}
+						f.WriteString(texts[i2])
+						f.WriteString("  \n")
+					}
+				default:
+					if strings.TrimSpace(strings.ToLower(citationFormat[0])) == "book" {
+						f.WriteString("## ")
+					} else {
+						f.WriteString("### ")
+					}
+					f.WriteString(strings.Title(citationFormat[0]))
+					f.WriteString(" ")
+					f.WriteString(citation)
+					f.WriteString("\n\n")
+					f.WriteString(texts[i2])
+					f.WriteString("\n\n")
+				}
+			} else {
+				if passage {
+					break
+				}
+			}
+		}
 	}
 }
 
