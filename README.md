@@ -69,3 +69,12 @@ OAI-PMH.md for information on OAI-PMH compliant hosting.
 ```
 The catalog can then replace the `catalog.json` in the gh-pages branch of the [First1KGreek](http://opengreekandlatin.github.io/First1KGreek/) repo.
 
+# Producing Markdown Files
+
+`TEItoCEX` now offers the possibility to produce Markdown files from the Open Greek and Latin XML versions:
+
+```
+./TEItoCEX-OSX x -Markdown
+```
+
+Those files can then edited and used to produce PDFs and EPUBs with pandoc.
